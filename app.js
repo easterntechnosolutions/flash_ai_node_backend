@@ -14,6 +14,7 @@ const db = require("./models");
 // ROUTES
 const authRoutes = require("./routes/authRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const tweetRoutes = require("./routes/tweetRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 
 // MIDDLEWARES MODULES
@@ -72,6 +73,9 @@ app.use(verifyToken);
 
 // CHAT ROUTES
 app.use(`${process.env.BASE_URL}/chat`, chatRoutes);
+
+// HISTORY ROUTES
+app.use(`${process.env.BASE_URL}/tweets`, tweetRoutes);
 
 // HISTORY ROUTES
 app.use(`${process.env.BASE_URL}/history`, historyRoutes);

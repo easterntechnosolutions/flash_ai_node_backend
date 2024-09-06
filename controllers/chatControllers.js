@@ -12,7 +12,7 @@ const { errorResponse } = require("../utils/handleResponses");
 
 dotenv.config();
 
-const usedTokensForAI = new Set();
+// const usedTokensForAI = new Set();
 const openai = new OpenAI({
   apiKey: process.env.APIKEY,
 });
@@ -27,16 +27,18 @@ const chatCompletionsAI = async (req, res) => {
       return errorResponse(res, message.AUTH.UNAUTHORIZED_TOKEN, null, 401);
     }
 
-    if (usedTokensForAI.has(token)) {
-      return errorResponse(res, message.AUTH.INVALID_TOKEN, null, 401);
-    }
+    // if (usedTokensForAI.has(token)) {
+    //   return errorResponse(res, message.AUTH.INVALID_TOKEN, null, 401);
+    // }
 
-    usedTokensForAI.add(token);
+    // usedTokensForAI.add(token);
 
     const passThrough = new PassThrough();
 
+    const { messages } = req.body;
+
     // Make a request to the OpenAI API
-    axios({
+    const response = await axios({
       method: "post",
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
@@ -44,27 +46,18 @@ const chatCompletionsAI = async (req, res) => {
         Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
-        model: req.model ?? "gpt-3.5-turbo-1106",
-        messages: req.body.messages,
+        model: "gpt-3.5-turbo",
+        messages: messages,
         stream: true,
       },
       responseType: "stream",
-    })
-      .then((response) => {
-        response.data.pipe(passThrough);
-      })
-      .catch((error) => {
-        console.error(error);
-        passThrough.on("error", (error) => {
-          console.error(error);
-          res.status(500).send("Internal Server Error");
-        });
-      });
+    });
 
-    logger.info("Successfully connected to OpenAI API.");
-
-    // Forward the streamed data to the client
+    // Pipe the streamed response to PassThrough, then to the client
+    response.data.pipe(passThrough);
     passThrough.pipe(res);
+
+    logger.info("Successfully connected to OpenAI API and streaming data.");
   } catch (error) {
     console.log("ERROR IN AI REPLY CHAT COMPLETIONS ::: ", error);
   }
@@ -73,24 +66,19 @@ const chatCompletionsAI = async (req, res) => {
 // FUNCTION FOR MANUAL REPLY
 const chatCompletionsManual = async (req, res) => {
   try {
-    const { text } = req.body;
+    const { messages } = req.body;
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: text },
-      ],
-      stream: true,
-      headers: {
-        Authorization: `Bearer ${process.env.APIKEY}`,
-      },
+      messages: messages,
     });
 
     // Stream and process the completion
-    for await (const chunk of completion) {
-      console.log(chunk.choices[0].delta.content);
-      return res.status(200).json({ data: chunk.choices[0].delta.content });
-    }
+    const response = completion.choices[0];
+    const responseObj = {
+      index: response.index,
+      message: response.message,
+    };
+    return res.status(200).json({ data: responseObj });
   } catch (error) {
     console.log("ERROR IN MANUAL REPLY CHAT COMPLETIONS ::: ", error);
   }
