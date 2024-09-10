@@ -2,10 +2,9 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 const OpenAI = require("openai");
 const { PassThrough } = require("stream");
-const jwt = require("jsonwebtoken");
 
 // USER MODEL
-const { History, Chat, Chat_Reply } = require("../models");
+const { Chat, Chat_Reply } = require("../models");
 
 // CORE-CONFIG MODULES
 const logger = require("../core-configurations/logger-config/loggers");
@@ -91,7 +90,7 @@ const chatCompletionsManual = async (req, res) => {
       } else {
         uniqueId = chatId;
 
-        // SECOND INSERT CHAT REPLY
+        // INSERT CHAT REPLY
         await Chat_Reply.create({
           chat_id: uniqueId,
           reply: responseObj.reply,

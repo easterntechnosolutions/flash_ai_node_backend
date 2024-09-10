@@ -9,43 +9,43 @@ const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
 
 // FUNCTION TO GET ALL LIST OF HISTORY
-const getAllHistory = async (req, res) => {
-  try {
-    logger.info("historyControllers --> getAllHistory --> reached");
+// const getAllHistory = async (req, res) => {
+//   try {
+//     logger.info("historyControllers --> getAllHistory --> reached");
 
-    const { page = 1, pageSize = 5 } = req.query;
-    const offset = (page - 1) * pageSize;
-    const limit = parseInt(pageSize, 10);
+//     const { page = 1, pageSize = 5 } = req.query;
+//     const offset = (page - 1) * pageSize;
+//     const limit = parseInt(pageSize, 10);
 
-    const { count, rows } = await History.findAndCountAll({
-      offset,
-      limit,
-    });
+//     const { count, rows } = await History.findAndCountAll({
+//       offset,
+//       limit,
+//     });
 
-    let responseData = {
-      histories: rows,
-      total: count,
-      page: parseInt(page, 10),
-      pageSize: limit,
-    };
+//     let responseData = {
+//       histories: rows,
+//       total: count,
+//       page: parseInt(page, 10),
+//       pageSize: limit,
+//     };
 
-    logger.info("historyControllers --> getAllHistory --> ended");
-    return successResponse(
-      res,
-      message.COMMON.LIST_FETCH_SUCCESS,
-      responseData,
-      200
-    );
-  } catch (error) {
-    logger.error("historyControllers --> getAllHistory --> error", error);
-    return errorResponse(
-      res,
-      message.SERVER.INTERNAL_SERVER_ERROR,
-      error.message,
-      500
-    );
-  }
-};
+//     logger.info("historyControllers --> getAllHistory --> ended");
+//     return successResponse(
+//       res,
+//       message.COMMON.LIST_FETCH_SUCCESS,
+//       responseData,
+//       200
+//     );
+//   } catch (error) {
+//     logger.error("historyControllers --> getAllHistory --> error", error);
+//     return errorResponse(
+//       res,
+//       message.SERVER.INTERNAL_SERVER_ERROR,
+//       error.message,
+//       500
+//     );
+//   }
+// };
 
 const getManualTextHistoryById = async (req, res) => {
   try {
@@ -53,7 +53,7 @@ const getManualTextHistoryById = async (req, res) => {
 
     const { id } = req.params;
 
-    // Manually perform an INNER JOIN between Chat and Chat_Reply using raw SQL
+    // Manually perform an LEFT JOIN between Chat and Chat_Reply using raw SQL
     const chatData = await sequelize.query(
       `SELECT c.chat_id, c.message, c.me, c.sequence, cr.reply
        FROM Chats c
@@ -73,16 +73,28 @@ const getManualTextHistoryById = async (req, res) => {
     const chats = [];
     const chatReplies = [];
 
-    chatData.forEach((row) => {
-      chats.push({
-        message: row.message,
-        me: row.me,
-        sequence: row.sequence,
-      });
+    // Use sets to track unique chats and replies
+    const chatSet = new Set();
+    const replySet = new Set();
 
-      chatReplies.push({
-        reply: row.reply,
-      });
+    chatData.forEach((row) => {
+      // Only add the chat message if it's not already added
+      if (!chatSet.has(row.sequence)) {
+        chats.push({
+          message: row.message,
+          me: row.me,
+          sequence: row.sequence,
+        });
+        chatSet.add(row.sequence);
+      }
+
+      // Add reply if it's not null or undefined
+      if (row.reply && !replySet.has(row.reply)) {
+        chatReplies.push({
+          reply: row.reply,
+        });
+        replySet.add(row.reply);
+      }
     });
 
     // Construct the final response object
@@ -135,4 +147,4 @@ const deleteHistory = async (req, res) => {
   }
 };
 
-module.exports = { getAllHistory, getManualTextHistoryById, deleteHistory };
+module.exports = { getManualTextHistoryById, deleteHistory };
