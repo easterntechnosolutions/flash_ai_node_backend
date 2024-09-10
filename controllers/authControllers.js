@@ -69,7 +69,7 @@ const logoutUser = (req, res) => {
       req.headers.authorization && req.headers.authorization.split(" ")[1];
 
     if (!token) {
-      return errorResponse(res, message.AUTH.UNAUTHORIZED_TOKEN, null, 401);
+      return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 401);
     }
 
     addToBlacklist(token);
@@ -93,7 +93,7 @@ const refreshAccessToken = (req, res) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return errorResponse(res, message.AUTH.UNAUTHORIZED_TOKEN, null, 427);
+      return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 427);
     }
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
@@ -102,13 +102,24 @@ const refreshAccessToken = (req, res) => {
     logger.info("authControllers --> refreshAccessToken --> ended");
     return successResponse(
       res,
-      message.AUTH.TOKEN_REFRESHED,
+      message.TOKEN.TOKEN_REFRESHED,
       { accessToken: newAccessToken },
       200
     );
   } catch (error) {
     logger.error("authControllers --> refreshAccessToken --> error", error);
-    return errorResponse(res, message.AUTH.INVALID_TOKEN, error, 403);
+    if (error.name === "TokenExpiredError") {
+      logger.error("Token has expired ::: ", error);
+      return errorResponse(
+        res,
+        message.TOKEN.REFRESH_TOKEN_EXPIRED,
+        error,
+        427
+      );
+    } else {
+      logger.error("Error in verifying token ::: ", error);
+      return errorResponse(res, message.TOKEN.INVALID_TOKEN, error, 403);
+    }
   }
 };
 module.exports = { loginUser, logoutUser, refreshAccessToken };

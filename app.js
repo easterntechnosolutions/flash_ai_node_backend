@@ -74,7 +74,7 @@ app.use(verifyToken);
 // CHAT ROUTES
 app.use(`${process.env.BASE_URL}/chat`, chatRoutes);
 
-// HISTORY ROUTES
+// TWEETS ROUTES
 app.use(`${process.env.BASE_URL}/tweets`, tweetRoutes);
 
 // HISTORY ROUTES

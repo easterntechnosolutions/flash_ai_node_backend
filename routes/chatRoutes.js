@@ -8,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.post("/completions/ai_reply", chatCompletionsAI);
+router.post("/completions/ai-reply", chatCompletionsAI);
 
-router.post("/completions/manual_reply", chatCompletionsManual);
+router.post("/completions/manual-reply", chatCompletionsManual);
 
 module.exports = router;

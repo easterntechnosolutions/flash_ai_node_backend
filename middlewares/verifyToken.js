@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
     req.headers.authorization && req.headers.authorization.split(" ")[1];
 
   if (!token || isBlacklisted(token)) {
-    return errorResponse(res, message.AUTH.UNAUTHORIZED_TOKEN, null, 401);
+    return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 401);
   }
 
   try {
@@ -29,8 +29,13 @@ const verifyToken = (req, res, next) => {
 
     next();
   } catch (error) {
-    logger.error("Error in verify token ::: ", error);
-    return errorResponse(res, message.AUTH.INVALID_TOKEN, error, 400);
+    if (error.name === "TokenExpiredError") {
+      logger.error("Token has expired ::: ", error);
+      return errorResponse(res, message.TOKEN.TOKEN_EXPIRED, error, 401);
+    } else {
+      logger.error("Error in verifying token ::: ", error);
+      return errorResponse(res, message.TOKEN.INVALID_TOKEN, error, 403);
+    }
   }
 };
 

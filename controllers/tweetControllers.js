@@ -32,22 +32,21 @@ const getAllTweets = async (req, res) => {
           },
           {
             role: "user",
-            content: "Please generate 10 clever and funny pickup lines.",
+            content:
+              "Please generate 10 clever and funny pickup lines. please be uniqu everytime you give generic pick up lines",
           },
         ],
       },
     });
 
-    const aiResponses = response.data.choices.map((choice) => {
+    const aiResponses = response.data.choices.flatMap((choice) => {
       let lines = choice.message.content
         .split("\n")
         .filter((line) => line.trim() !== "");
 
       lines = lines.map((line) => line.replace(/^\d+\.\s*/, ""));
 
-      return {
-        text: lines,
-      };
+      return lines;
     });
 
     logger.info("tweetControllers --> getAllTweets --> ended");

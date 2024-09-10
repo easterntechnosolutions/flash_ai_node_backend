@@ -5,6 +5,6 @@ const { getAllTweets } = require("../controllers/tweetControllers");
 
 const router = express.Router();
 
-router.post("/get_all_tweets", getAllTweets);
+router.get("/", getAllTweets);
 
 module.exports = router;

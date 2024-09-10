@@ -8,16 +8,20 @@ module.exports = {
     FETCH_SUCCESS: "Fetched Successfully",
   },
   AUTH: {
-    INVALID_USER: "Invalid email or user does not exist",
     VERIFIED_USER: "Verified User Successfully",
-    INVALID_TOKEN: "Invalid Token",
+    INVALID_USER: "Invalid email or user does not exist",
     INVALID_FORMAT: "Invalid Format",
-    UNAUTHORIZED_TOKEN: "Unauthorized Token",
-    TOKEN_REFRESHED: "NEW ACCESS TOKEN",
     ACCESS_DENIED: "Access Denied",
     LOGOUT: "User Logout Successfully",
   },
   SERVER: {
     INTERNAL_SERVER_ERROR: "Internal Server Error",
+  },
+  TOKEN: {
+    TOKEN_EXPIRED: "Token has been expired",
+    REFRESH_TOKEN_EXPIRED: "Refesh Token has been expired",
+    INVALID_TOKEN: "Invalid Token",
+    UNAUTHORIZED_TOKEN: "Unauthorized Token",
+    TOKEN_REFRESHED: "NEW ACCESS TOKEN",
   },
 };

@@ -2,13 +2,17 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 const OpenAI = require("openai");
 const { PassThrough } = require("stream");
+const jwt = require("jsonwebtoken");
+
+// USER MODEL
+const { History } = require("../models");
 
 // CORE-CONFIG MODULES
 const logger = require("../core-configurations/logger-config/loggers");
 
 // UTILS MODULES
 const message = require("../utils/commonMessages");
-const { errorResponse } = require("../utils/handleResponses");
+const { successResponse, errorResponse } = require("../utils/handleResponses");
 
 dotenv.config();
 
@@ -20,12 +24,12 @@ const openai = new OpenAI({
 // FUNCTION FOR AI REPLY
 const chatCompletionsAI = async (req, res) => {
   try {
-    const token =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
+    // const token =
+    //   req.headers.authorization && req.headers.authorization.split(" ")[1];
 
-    if (!token) {
-      return errorResponse(res, message.AUTH.UNAUTHORIZED_TOKEN, null, 401);
-    }
+    // if (!token) {
+    //   return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 401);
+    // }
 
     // if (usedTokensForAI.has(token)) {
     //   return errorResponse(res, message.AUTH.INVALID_TOKEN, null, 401);
@@ -67,6 +71,14 @@ const chatCompletionsAI = async (req, res) => {
 const chatCompletionsManual = async (req, res) => {
   try {
     const { messages } = req.body;
+
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    if (!token) {
+      return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 401);
+    }
+
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: messages,
@@ -75,12 +87,33 @@ const chatCompletionsManual = async (req, res) => {
     // Stream and process the completion
     const response = completion.choices[0];
     const responseObj = {
-      index: response.index,
-      message: response.message,
+      message: response.message.content,
     };
-    return res.status(200).json({ data: responseObj });
+
+    // AFTER SUCCESSFULL RESPONSE DATA SHOULD ADDED ON HISTORY
+    if (responseObj) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      await History.create({
+        history: responseObj.message,
+        email: decoded.email,
+      });
+    }
+
+    return successResponse(
+      res,
+      message.COMMON.CREATE_SUCCESS,
+      responseObj,
+      200
+    );
   } catch (error) {
     console.log("ERROR IN MANUAL REPLY CHAT COMPLETIONS ::: ", error);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
   }
 };
 
