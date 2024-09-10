@@ -1,5 +1,5 @@
 // MODELS
-const { History, sequelize } = require("../models");
+const { History, Chat, Chat_Reply, sequelize } = require("../models");
 
 // CORE CONFIG
 const logger = require("../core-configurations/logger-config/loggers");
@@ -7,31 +7,6 @@ const logger = require("../core-configurations/logger-config/loggers");
 // UTILS
 const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
-
-// FUNCTION TO CREATE HISTORY
-const createHistory = async (req, res) => {
-  try {
-    logger.info("historyControllers --> createHistory --> reached");
-
-    const { history, email } = req.body;
-
-    const result = await History.create({
-      history,
-      email,
-    });
-
-    logger.info("historyControllers --> createHistory --> ended");
-    return successResponse(res, message.COMMON.CREATE_SUCCESS, result, 201);
-  } catch (error) {
-    logger.error("historyControllers --> createHistory --> error", error);
-    return errorResponse(
-      res,
-      message.SERVER.INTERNAL_SERVER_ERROR,
-      error.message,
-      500
-    );
-  }
-};
 
 // FUNCTION TO GET ALL LIST OF HISTORY
 const getAllHistory = async (req, res) => {
@@ -72,6 +47,67 @@ const getAllHistory = async (req, res) => {
   }
 };
 
+const getManualTextHistoryById = async (req, res) => {
+  try {
+    logger.info("historyControllers --> getManualTextHistoryById --> reached");
+
+    const { id } = req.params;
+
+    // Manually perform an INNER JOIN between Chat and Chat_Reply using raw SQL
+    const chatData = await sequelize.query(
+      `SELECT c.chat_id, c.message, c.me, c.sequence, cr.reply
+       FROM Chats c
+       LEFT JOIN Chat_Replies cr ON c.chat_id = cr.chat_id
+       WHERE c.chat_id = :chat_id`,
+      {
+        replacements: { chat_id: id },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!chatData.length) {
+      return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
+    }
+
+    // Extract chat information and chat replies into separate arrays
+    const chats = [];
+    const chatReplies = [];
+
+    chatData.forEach((row) => {
+      chats.push({
+        message: row.message,
+        me: row.me,
+        sequence: row.sequence,
+      });
+
+      chatReplies.push({
+        reply: row.reply,
+      });
+    });
+
+    // Construct the final response object
+    const responseObj = {
+      chatId: id,
+      chats,
+      chatReplies,
+    };
+
+    logger.info("historyControllers --> getManualTextHistoryById --> ended");
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, responseObj, 200);
+  } catch (error) {
+    logger.error(
+      "historyControllers --> getManualTextHistoryById --> error",
+      error
+    );
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
 // FUNCTION TO DELETE HISTORY BY ID
 const deleteHistory = async (req, res) => {
   try {
@@ -99,4 +135,4 @@ const deleteHistory = async (req, res) => {
   }
 };
 
-module.exports = { createHistory, getAllHistory, deleteHistory };
+module.exports = { getAllHistory, getManualTextHistoryById, deleteHistory };

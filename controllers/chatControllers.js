@@ -5,7 +5,7 @@ const { PassThrough } = require("stream");
 const jwt = require("jsonwebtoken");
 
 // USER MODEL
-const { History } = require("../models");
+const { History, Chat, Chat_Reply } = require("../models");
 
 // CORE-CONFIG MODULES
 const logger = require("../core-configurations/logger-config/loggers");
@@ -13,6 +13,7 @@ const logger = require("../core-configurations/logger-config/loggers");
 // UTILS MODULES
 const message = require("../utils/commonMessages");
 const { successResponse, errorResponse } = require("../utils/handleResponses");
+const { type } = require("os");
 
 dotenv.config();
 
@@ -24,21 +25,7 @@ const openai = new OpenAI({
 // FUNCTION FOR AI REPLY
 const chatCompletionsAI = async (req, res) => {
   try {
-    // const token =
-    //   req.headers.authorization && req.headers.authorization.split(" ")[1];
-
-    // if (!token) {
-    //   return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 401);
-    // }
-
-    // if (usedTokensForAI.has(token)) {
-    //   return errorResponse(res, message.AUTH.INVALID_TOKEN, null, 401);
-    // }
-
-    // usedTokensForAI.add(token);
-
     const passThrough = new PassThrough();
-
     const { messages } = req.body;
 
     // Make a request to the OpenAI API
@@ -70,14 +57,7 @@ const chatCompletionsAI = async (req, res) => {
 // FUNCTION FOR MANUAL REPLY
 const chatCompletionsManual = async (req, res) => {
   try {
-    const { messages } = req.body;
-
-    const token =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
-
-    if (!token) {
-      return errorResponse(res, message.TOKEN.UNAUTHORIZED_TOKEN, null, 401);
-    }
+    const { messages, chat, chatId } = req.body;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -86,24 +66,49 @@ const chatCompletionsManual = async (req, res) => {
 
     // Stream and process the completion
     const response = completion.choices[0];
+
     const responseObj = {
-      message: response.message.content,
+      reply: response.message.content,
     };
 
     // AFTER SUCCESSFULL RESPONSE DATA SHOULD ADDED ON HISTORY
+    let uniqueId;
     if (responseObj) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      uniqueId = chatId || Math.floor(100000 + Math.random() * 900000);
+      if (chatId === null) {
+        // FIRST BULK INSERT CHAT MESSAGES
+        const updatedChat = chat.map((chatItem) => ({
+          ...chatItem,
+          chat_id: uniqueId,
+        }));
+        await Chat.bulkCreate(updatedChat);
 
-      await History.create({
-        history: responseObj.message,
-        email: decoded.email,
-      });
+        // SECOND INSERT CHAT REPLY
+        await Chat_Reply.create({
+          chat_id: uniqueId,
+          reply: responseObj.reply,
+        });
+      } else {
+        uniqueId = chatId;
+
+        // SECOND INSERT CHAT REPLY
+        await Chat_Reply.create({
+          chat_id: uniqueId,
+          reply: responseObj.reply,
+        });
+      }
     }
+
+    // Update responseObj to include chatId (uniqueId)
+    const updatedResponseObj = {
+      reply: responseObj.reply,
+      chatId: uniqueId,
+    };
 
     return successResponse(
       res,
       message.COMMON.CREATE_SUCCESS,
-      responseObj,
+      updatedResponseObj,
       200
     );
   } catch (error) {

@@ -22,6 +22,9 @@ module.exports = {
     REFRESH_TOKEN_EXPIRED: "Refesh Token has been expired",
     INVALID_TOKEN: "Invalid Token",
     UNAUTHORIZED_TOKEN: "Unauthorized Token",
-    TOKEN_REFRESHED: "NEW ACCESS TOKEN",
+    TOKEN_REFRESHED: "New Access Token",
+  },
+  CHAT: {
+    ID_EXITS: "Id Exits",
   },
 };

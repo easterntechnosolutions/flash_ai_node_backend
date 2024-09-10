@@ -2,15 +2,15 @@ const express = require("express");
 
 // CONTROLLERS
 const {
-  createHistory,
   getAllHistory,
+  getManualTextHistoryById,
   deleteHistory,
 } = require("../controllers/historyControllers");
 
 const router = express.Router();
 
-router.post("/create-history", createHistory);
 router.get("/", getAllHistory);
+router.get("/:id", getManualTextHistoryById);
 router.delete("/:id", deleteHistory);
 
 module.exports = router;

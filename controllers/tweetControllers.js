@@ -32,8 +32,7 @@ const getAllTweets = async (req, res) => {
           },
           {
             role: "user",
-            content:
-              "Please generate 10 clever and funny pickup lines. please be uniqu everytime you give generic pick up lines",
+            content: "Please generate 10 clever and funny pickup lines",
           },
         ],
       },

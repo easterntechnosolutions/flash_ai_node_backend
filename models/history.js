@@ -5,6 +5,7 @@ const { Model, DataTypes } = require("sequelize");
 module.exports = (sequelize) => {
   class History extends Model {
     static associate(models) {
+      // Associations
       History.belongsTo(models.User, {
         foreignKey: "email",
         as: "user",
@@ -13,10 +14,6 @@ module.exports = (sequelize) => {
   }
   History.init(
     {
-      history: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
       email: {
         type: DataTypes.STRING,
         references: {
@@ -27,6 +24,10 @@ module.exports = (sequelize) => {
         validate: {
           isEmail: true,
         },
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
     },
 
