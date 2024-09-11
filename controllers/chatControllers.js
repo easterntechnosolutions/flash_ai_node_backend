@@ -4,7 +4,7 @@ const OpenAI = require("openai");
 const { PassThrough } = require("stream");
 
 // USER MODEL
-const { Chat, Chat_Reply } = require("../models");
+const { Chat, Image, Chat_Reply } = require("../models");
 
 // CORE-CONFIG MODULES
 const logger = require("../core-configurations/logger-config/loggers");
@@ -121,4 +121,90 @@ const chatCompletionsManual = async (req, res) => {
   }
 };
 
-module.exports = { chatCompletionsAI, chatCompletionsManual };
+// FUNCTION FOR IMAGE REPLY
+const chatCompletionsImage = async (req, res) => {
+  try {
+    const { messages, chatId } = req.body;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: messages,
+    });
+
+    // Stream and process the completion
+    const response = completion.choices[0];
+    const responseObj = {
+      reply: response.message.content,
+    };
+
+    // AFTER SUCCESSFULL RESPONSE DATA SHOULD ADDED ON HISTORY
+    let uniqueId;
+    let imageUrl = null;
+    if (responseObj) {
+      uniqueId = chatId || Math.floor(100000 + Math.random() * 900000);
+      if (chatId === null) {
+        // FIRST BULK INSERT CHAT MESSAGES
+        for (const message of messages) {
+          if (message.role === "user" && Array.isArray(message.content)) {
+            for (const contentItem of message.content) {
+              if (
+                contentItem.type === "image_url" &&
+                contentItem.image_url &&
+                contentItem.image_url.url
+              ) {
+                imageUrl = contentItem.image_url.url;
+                break;
+              }
+            }
+          }
+          if (imageUrl) break;
+        }
+        await Image.create({
+          chat_id: uniqueId,
+          image_url: imageUrl,
+        });
+
+        // // SECOND INSERT CHAT REPLY
+        await Chat_Reply.create({
+          chat_id: uniqueId,
+          reply: responseObj.reply,
+        });
+      } else {
+        uniqueId = chatId;
+
+        // INSERT CHAT REPLY
+        await Chat_Reply.create({
+          chat_id: uniqueId,
+          reply: responseObj.reply,
+        });
+      }
+    }
+
+    // Update responseObj to include chatId (uniqueId)
+    const updatedResponseObj = {
+      reply: responseObj.reply,
+      chatId: uniqueId,
+    };
+
+    return successResponse(
+      res,
+      message.COMMON.CREATE_SUCCESS,
+      updatedResponseObj,
+      200
+    );
+  } catch (error) {
+    console.log("ERROR IN MANUAL REPLY CHAT COMPLETIONS ::: ", error);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
+module.exports = {
+  chatCompletionsAI,
+  chatCompletionsManual,
+  chatCompletionsImage,
+};

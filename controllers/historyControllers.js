@@ -1,5 +1,5 @@
 // MODELS
-const { History, Chat, Chat_Reply, sequelize } = require("../models");
+const { History, sequelize } = require("../models");
 
 // CORE CONFIG
 const logger = require("../core-configurations/logger-config/loggers");

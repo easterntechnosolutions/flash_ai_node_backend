@@ -26,13 +26,14 @@ const getAllTweets = async (req, res) => {
         model: "gpt-3.5-turbo",
         messages: [
           {
-            role: "system",
+            role: "user",
             content:
-              "You are a creative assistant that generates clever and funny pickup lines.",
+              "Please generate 10 clever and funny pickup lines, do not add any prefix or suffix. Separate each pick up line by a | symbol",
           },
           {
-            role: "user",
-            content: "Please generate 10 clever and funny pickup lines",
+            role: "system",
+            content:
+              "You, as a Dating Coach, Suggest a good pickup line. must apply an individual approach to each client, uphold professional ethics and confidentiality, boost clients' confidence, and develop their communication skills while providing objective feedback. It is essential for you to flexibly adapt your teaching methods, assist clients in setting goals, and continuously self-improve by studying new approaches and research. You should teach clients how to resolve conflicts and support them at every step of the process, ensuring their motivation and support in their quest to improve their personal lives. DO NOT REPLY IF ANYTHING TECHNICAL IS ASKED IN THIS CHAT ONLY TALK ABOUT LOVE.",
           },
         ],
       },
@@ -40,7 +41,7 @@ const getAllTweets = async (req, res) => {
 
     const aiResponses = response.data.choices.flatMap((choice) => {
       let lines = choice.message.content
-        .split("\n")
+        .split("|")
         .filter((line) => line.trim() !== "");
 
       lines = lines.map((line) => line.replace(/^\d+\.\s*/, ""));
