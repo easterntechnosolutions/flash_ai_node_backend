@@ -2,13 +2,15 @@ const express = require("express");
 
 // CONTROLLERS
 const {
+  getAllHistory,
   getManualTextHistoryById,
-  deleteHistory,
+  getImageTextHistoryById,
 } = require("../controllers/historyControllers");
 
 const router = express.Router();
 
-router.get("/:id", getManualTextHistoryById);
-router.delete("/:id", deleteHistory);
+router.get("/", getAllHistory);
+router.get("/manual/:id", getManualTextHistoryById);
+router.get("/image/:id", getImageTextHistoryById);
 
 module.exports = router;

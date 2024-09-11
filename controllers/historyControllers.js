@@ -9,44 +9,45 @@ const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
 
 // FUNCTION TO GET ALL LIST OF HISTORY
-// const getAllHistory = async (req, res) => {
-//   try {
-//     logger.info("historyControllers --> getAllHistory --> reached");
+const getAllHistory = async (req, res) => {
+  try {
+    logger.info("historyControllers --> getAllHistory --> reached");
 
-//     const { page = 1, pageSize = 5 } = req.query;
-//     const offset = (page - 1) * pageSize;
-//     const limit = parseInt(pageSize, 10);
+    const { page = 1, pageSize = 5 } = req.query;
+    const offset = (page - 1) * pageSize;
+    const limit = parseInt(pageSize, 10);
 
-//     const { count, rows } = await History.findAndCountAll({
-//       offset,
-//       limit,
-//     });
+    const { count, rows } = await History.findAndCountAll({
+      offset,
+      limit,
+    });
 
-//     let responseData = {
-//       histories: rows,
-//       total: count,
-//       page: parseInt(page, 10),
-//       pageSize: limit,
-//     };
+    let responseData = {
+      histories: rows,
+      total: count,
+      page: parseInt(page, 10),
+      pageSize: limit,
+    };
 
-//     logger.info("historyControllers --> getAllHistory --> ended");
-//     return successResponse(
-//       res,
-//       message.COMMON.LIST_FETCH_SUCCESS,
-//       responseData,
-//       200
-//     );
-//   } catch (error) {
-//     logger.error("historyControllers --> getAllHistory --> error", error);
-//     return errorResponse(
-//       res,
-//       message.SERVER.INTERNAL_SERVER_ERROR,
-//       error.message,
-//       500
-//     );
-//   }
-// };
+    logger.info("historyControllers --> getAllHistory --> ended");
+    return successResponse(
+      res,
+      message.COMMON.LIST_FETCH_SUCCESS,
+      responseData,
+      200
+    );
+  } catch (error) {
+    logger.error("historyControllers --> getAllHistory --> error", error);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
 
+// FUNCTION TO GET MANUAL TEXT HISTORY BY ID
 const getManualTextHistoryById = async (req, res) => {
   try {
     logger.info("historyControllers --> getManualTextHistoryById --> reached");
@@ -90,9 +91,7 @@ const getManualTextHistoryById = async (req, res) => {
 
       // Add reply if it's not null or undefined
       if (row.reply && !replySet.has(row.reply)) {
-        chatReplies.push({
-          reply: row.reply,
-        });
+        chatReplies.push(row.reply);
         replySet.add(row.reply);
       }
     });
@@ -120,24 +119,68 @@ const getManualTextHistoryById = async (req, res) => {
   }
 };
 
-// FUNCTION TO DELETE HISTORY BY ID
-const deleteHistory = async (req, res) => {
+// FUNCTION TO GET IMAGE TEXT HISTORY BY ID
+const getImageTextHistoryById = async (req, res) => {
   try {
-    logger.info("historyControllers --> deleteHistory --> reached");
+    logger.info("historyControllers --> getImageTextHistoryById --> reached");
 
     const { id } = req.params;
 
-    const history = await History.findByPk(id);
-    if (!history) {
+    // Manually perform an LEFT JOIN between Chat and Chat_Reply using raw SQL
+    const imageData = await sequelize.query(
+      `SELECT i.chat_id, i.image_url, cr.reply
+       FROM Images i
+       LEFT JOIN Chat_Replies cr ON i.chat_id = cr.chat_id
+       WHERE i.chat_id = :chat_id`,
+      {
+        replacements: { chat_id: id },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    console.lo;
+
+    if (!imageData.length) {
       return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
     }
 
-    await history.destroy();
+    // Extract image information and chat replies into separate arrays
+    const images = [];
+    const chatReplies = [];
 
-    logger.info("historyControllers --> deleteHistory --> ended");
-    return successResponse(res, message.COMMON.DELETE_SUCCESS, history, 200);
+    // Use sets to track unique chats and replies
+    const imageSet = new Set();
+    const replySet = new Set();
+
+    imageData.forEach((row) => {
+      // Only add the image url if it's not already added
+      if (!imageSet.has(row.sequence)) {
+        images.push({
+          image_url: row.image_url,
+        });
+        imageSet.add(row.sequence);
+      }
+
+      // Add reply if it's not null or undefined
+      if (row.reply && !replySet.has(row.reply)) {
+        chatReplies.push(row.reply);
+        replySet.add(row.reply);
+      }
+    });
+
+    // Construct the final response object
+    const responseObj = {
+      chatId: id,
+      images,
+      chatReplies,
+    };
+
+    logger.info("historyControllers --> getImageTextHistoryById --> ended");
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, responseObj, 200);
   } catch (error) {
-    logger.error("historyControllers --> deleteHistory --> error", error);
+    logger.error(
+      "historyControllers --> getImageTextHistoryById --> error",
+      error
+    );
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -147,4 +190,8 @@ const deleteHistory = async (req, res) => {
   }
 };
 
-module.exports = { getManualTextHistoryById, deleteHistory };
+module.exports = {
+  getAllHistory,
+  getManualTextHistoryById,
+  getImageTextHistoryById,
+};
