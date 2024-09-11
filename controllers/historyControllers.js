@@ -13,27 +13,86 @@ const getAllHistory = async (req, res) => {
   try {
     logger.info("historyControllers --> getAllHistory --> reached");
 
-    const { page = 1, pageSize = 5 } = req.query;
-    const offset = (page - 1) * pageSize;
-    const limit = parseInt(pageSize, 10);
+    // First Query: Fetch data for chat_id where images and chat replies exist
+    const imageData = await sequelize.query(
+      `SELECT i.chat_id, i.image_url, cr.reply
+       FROM Images i
+       LEFT JOIN Chat_Replies cr ON i.chat_id = cr.chat_id
+       ORDER BY i.chat_id`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
 
-    const { count, rows } = await History.findAndCountAll({
-      offset,
-      limit,
+    // Second Query: Fetch data for chat_id where chats and chat replies exist
+    const chatData = await sequelize.query(
+      `SELECT c.chat_id, c.message, cr.reply
+       FROM Chats c
+       LEFT JOIN Chat_Replies cr ON c.chat_id = cr.chat_id
+       ORDER BY c.chat_id, c.sequence`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    // Process the data for Images and combine replies
+    let imageResponse = {};
+    imageData.forEach((item) => {
+      if (!imageResponse[item.chat_id]) {
+        imageResponse[item.chat_id] = {
+          chatId: item.chat_id,
+          image: item.image_url,
+        };
+      }
     });
 
-    let responseData = {
-      histories: rows,
-      total: count,
-      page: parseInt(page, 10),
-      pageSize: limit,
-    };
+    // Process the data for Chats and Replies
+    let chatResponse = {};
+    chatData.forEach((item) => {
+      if (!chatResponse[item.chat_id]) {
+        chatResponse[item.chat_id] = {
+          chatId: item.chat_id,
+          chats: new Set(),
+          replies: new Set(),
+        };
+      }
+
+      // Add chat message
+      if (item.message) {
+        chatResponse[item.chat_id].chats.add(item.message);
+      }
+
+      // Add reply if it exists
+      if (item.reply) {
+        chatResponse[item.chat_id].replies.add(item.reply);
+      }
+    });
+
+    // Combine both responses into one
+    const finalResponse = [];
+
+    // Process Image data response
+    Object.values(imageResponse).forEach((imageData) => {
+      finalResponse.push({
+        chatId: imageData.chatId,
+        image: imageData.image,
+      });
+    });
+
+    // Process Chat data response
+    Object.values(chatResponse).forEach((chatData) => {
+      finalResponse.push({
+        chatId: chatData.chatId,
+        chats: Array.from(chatData.chats),
+        replies: Array.from(chatData.replies),
+      });
+    });
 
     logger.info("historyControllers --> getAllHistory --> ended");
     return successResponse(
       res,
       message.COMMON.LIST_FETCH_SUCCESS,
-      responseData,
+      finalResponse,
       200
     );
   } catch (error) {
@@ -79,7 +138,6 @@ const getManualTextHistoryById = async (req, res) => {
     const replySet = new Set();
 
     chatData.forEach((row) => {
-      // Only add the chat message if it's not already added
       if (!chatSet.has(row.sequence)) {
         chats.push({
           message: row.message,
@@ -89,7 +147,6 @@ const getManualTextHistoryById = async (req, res) => {
         chatSet.add(row.sequence);
       }
 
-      // Add reply if it's not null or undefined
       if (row.reply && !replySet.has(row.reply)) {
         chatReplies.push(row.reply);
         replySet.add(row.reply);
