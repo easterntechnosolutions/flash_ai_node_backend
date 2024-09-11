@@ -1,5 +1,5 @@
 // MODELS
-const { History, sequelize } = require("../models");
+const { Chat, Image, Chat_Reply, sequelize } = require("../models");
 
 // CORE CONFIG
 const logger = require("../core-configurations/logger-config/loggers");
@@ -155,7 +155,7 @@ const getManualTextHistoryById = async (req, res) => {
 
     // Construct the final response object
     const responseObj = {
-      chatId: id,
+      chatId: parseInt(id),
       chats,
       chatReplies,
     };
@@ -226,7 +226,7 @@ const getImageTextHistoryById = async (req, res) => {
 
     // Construct the final response object
     const responseObj = {
-      chatId: id,
+      chatId: parseInt(id),
       images,
       chatReplies,
     };
@@ -247,8 +247,78 @@ const getImageTextHistoryById = async (req, res) => {
   }
 };
 
+// FUNCTION TO DELETE THE HISTORY BY CHAT ID
+const deleteHistory = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    logger.info("historyControllers --> deleteHistory --> reached");
+
+    const { id } = req.params;
+
+    // FIRST DELETE DATA FROM CHAT TABLE
+    let chatResult = await Chat.findAll({
+      where: {
+        chat_id: id,
+      },
+    });
+    if (chatResult && chatResult.length > 0) {
+      // Proceed to delete if the record exists
+      await Chat.destroy({
+        where: { chat_id: id },
+        transaction,
+      });
+    }
+
+    // SECOND DELETE DATA FROM IMAGE TABLE
+    let imageResult = await Image.findAll({
+      where: {
+        chat_id: id,
+      },
+    });
+    if (imageResult && imageResult.length > 0) {
+      // Proceed to delete if the record exists
+      await Image.destroy({
+        where: { chat_id: id },
+        transaction,
+      });
+    }
+
+    // THIRD DELETE DATA FROM CHAT_REPLY TABLE
+    let chatReplyResult = await Chat_Reply.findAll({
+      where: {
+        chat_id: id,
+      },
+    });
+    if (chatReplyResult && chatReplyResult.length > 0) {
+      // Proceed to delete if the record exists
+      await Chat_Reply.destroy({
+        where: { chat_id: id },
+        transaction,
+      });
+    }
+
+    // Commit the transaction if no errors
+    await transaction.commit();
+
+    logger.info("historyControllers --> deleteHistory --> ended");
+    return successResponse(res, message.COMMON.DELETE_SUCCESS, null, 200);
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    await transaction.rollback();
+
+    logger.error("historyControllers --> deleteHistory --> error", error);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
 module.exports = {
   getAllHistory,
   getManualTextHistoryById,
   getImageTextHistoryById,
+  deleteHistory,
 };
