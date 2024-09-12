@@ -8,91 +8,95 @@ const logger = require("../core-configurations/logger-config/loggers");
 const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
 
-// FUNCTION TO GET ALL LIST OF HISTORY
+// FUNCTION TO GET ALL LIST OF HISTORY WITH CHAT AND IMAGE DATA
 const getAllHistory = async (req, res) => {
   try {
     logger.info("historyControllers --> getAllHistory --> reached");
 
-    // First Query: Fetch data for chat_id where images and chat replies exist
-    const imageData = await sequelize.query(
-      `SELECT i.chat_id, i.image_url, cr.reply
-       FROM Images i
-       LEFT JOIN Chat_Replies cr ON i.chat_id = cr.chat_id
-       ORDER BY i.chat_id`,
-      {
-        type: sequelize.QueryTypes.SELECT,
-      }
-    );
+    const { page = 1, pageSize = 5 } = req.query;
+    const limit = parseInt(pageSize, 10);
+    const offset = (parseInt(page, 10) - 1) * limit;
 
-    // Second Query: Fetch data for chat_id where chats and chat replies exist
-    const chatData = await sequelize.query(
-      `SELECT c.chat_id, c.message, cr.reply
+    // Perform outer join between Chats and Images using UNION with pagination
+    const historyData = await sequelize.query(
+      `SELECT c.chat_id, 
+              GROUP_CONCAT(c.message ORDER BY c.sequence SEPARATOR ', ') AS messages,
+              i.image_url
        FROM Chats c
-       LEFT JOIN Chat_Replies cr ON c.chat_id = cr.chat_id
-       ORDER BY c.chat_id, c.sequence`,
+       LEFT JOIN Images i ON c.chat_id = i.chat_id
+       GROUP BY c.chat_id, i.image_url
+       
+       UNION
+
+       SELECT i.chat_id, 
+              NULL AS messages,
+              i.image_url
+       FROM Images i
+       LEFT JOIN Chats c ON i.chat_id = c.chat_id
+       WHERE c.chat_id IS NULL
+       
+       ORDER BY chat_id
+       LIMIT :limit OFFSET :offset`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: { limit, offset },
+      }
+    );
+
+    // Count total records for pagination meta-data
+    const totalCountResult = await sequelize.query(
+      `SELECT COUNT(*) AS totalCount FROM (
+          SELECT c.chat_id
+          FROM Chats c
+          LEFT JOIN Images i ON c.chat_id = i.chat_id
+          GROUP BY c.chat_id, i.image_url
+          
+          UNION
+          
+          SELECT i.chat_id
+          FROM Images i
+          LEFT JOIN Chats c ON i.chat_id = c.chat_id
+          WHERE c.chat_id IS NULL
+      ) AS total`,
       {
         type: sequelize.QueryTypes.SELECT,
       }
     );
 
-    // Process the data for Images and combine replies
-    let imageResponse = {};
-    imageData.forEach((item) => {
-      if (!imageResponse[item.chat_id]) {
-        imageResponse[item.chat_id] = {
-          chatId: item.chat_id,
-          image: item.image_url,
-        };
-      }
-    });
+    const totalRecords = totalCountResult[0].totalCount;
 
-    // Process the data for Chats and Replies
-    let chatResponse = {};
-    chatData.forEach((item) => {
-      if (!chatResponse[item.chat_id]) {
-        chatResponse[item.chat_id] = {
-          chatId: item.chat_id,
-          chats: new Set(),
-          replies: new Set(),
-        };
+    // Process the data to format the response
+    const finalResponse = historyData.map((item) => {
+      const chatResponse = {
+        chatId: parseInt(item.chat_id),
+      };
+
+      // Conditionally add chats if messages exist
+      if (item.messages && item.messages.length > 0) {
+        chatResponse.chats = item.messages.split(", ").map((msg) => msg.trim());
       }
 
-      // Add chat message
-      if (item.message) {
-        chatResponse[item.chat_id].chats.add(item.message);
+      // Include image if available
+      if (item.image_url) {
+        chatResponse.image = item.image_url;
       }
 
-      // Add reply if it exists
-      if (item.reply) {
-        chatResponse[item.chat_id].replies.add(item.reply);
-      }
+      return chatResponse;
     });
 
-    // Combine both responses into one
-    const finalResponse = [];
-
-    // Process Image data response
-    Object.values(imageResponse).forEach((imageData) => {
-      finalResponse.push({
-        chatId: imageData.chatId,
-        image: imageData.image,
-      });
-    });
-
-    // Process Chat data response
-    Object.values(chatResponse).forEach((chatData) => {
-      finalResponse.push({
-        chatId: chatData.chatId,
-        chats: Array.from(chatData.chats),
-        replies: Array.from(chatData.replies),
-      });
-    });
+    // Prepare paginated response
+    const responseData = {
+      histories: finalResponse,
+      total: totalRecords,
+      page: parseInt(page, 10),
+      pageSize: limit,
+    };
 
     logger.info("historyControllers --> getAllHistory --> ended");
     return successResponse(
       res,
       message.COMMON.LIST_FETCH_SUCCESS,
-      finalResponse,
+      responseData,
       200
     );
   } catch (error) {
