@@ -13,7 +13,7 @@ const getAllHistory = async (req, res) => {
   try {
     logger.info("historyControllers --> getAllHistory --> reached");
 
-    const { page = 1, pageSize = 5 } = req.query;
+    const { page = 1, pageSize = 10 } = req.query;
     const limit = parseInt(pageSize, 10);
     const offset = (parseInt(page, 10) - 1) * limit;
 
