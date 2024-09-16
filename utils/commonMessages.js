@@ -23,6 +23,8 @@ module.exports = {
     INVALID_TOKEN: "Invalid Token",
     UNAUTHORIZED_TOKEN: "Unauthorized Token",
     TOKEN_REFRESHED: "New Access Token",
+    TOKEN_VERIFIED: "Token verified successfully",
+    INVALID_AUDIENCE: "Invalid Audience",
   },
   CHAT: {
     ID_EXITS: "Id Exits",
