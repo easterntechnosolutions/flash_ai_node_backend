@@ -39,8 +39,8 @@ const googleLoginUser = async (req, res) => {
     }
 
     // GENERATE TOKENS
-    const accessToken = generateAccessToken(sub, user.email);
-    const refreshToken = generateRefreshToken(sub, user.email);
+    const accessToken = generateAccessToken(user.id, user.email);
+    const refreshToken = generateRefreshToken(user.id, user.email);
 
     const userData = {
       accessToken,
@@ -156,9 +156,8 @@ const appleLoginUser = async (req, res) => {
       return errorResponse(res, message.TOKEN.TOKEN_EXPIRED, null, 401);
     }
 
-    logger.info(`DECODED TOKEN --> ${decodedToken}`);
-
     const { sub, email } = decodedToken;
+    console.log("DECODED TOKEN ::: ", decodedToken);
 
     // GENERATE TOKENS
     const accessToken = generateAccessToken(sub, email);
@@ -167,11 +166,13 @@ const appleLoginUser = async (req, res) => {
     // FIND OR CREATE A NEW USER
     let user = await User.findOne({ where: { email } });
 
+    let generatedUserName = email.split("@")[0];
+
     if (!user) {
       user = await User.create({
-        name: "Apple User",
+        name: generatedUserName,
         email,
-        appleUserId: sub,
+        user_id: sub,
       });
     }
 
