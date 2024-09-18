@@ -73,6 +73,42 @@ const getKey = async (kid) => {
   return key.getPublicKey();
 };
 
+// FUNCTION TO GENERATE CLINET SECRET
+const generateAppleClientSecret = () => {
+  try {
+    const privateKey = `-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg8Ns+ikRhb3If6nW2
+c6Xp+J4IVhx13RpZRjDhd0d92J+gCgYIKoZIzj0DAQehRANCAAS/sbRehYOvEryw
+w9i61ZkzjSNASlfefEnYNx5jNK9ol2wBabD0pLVSyA4N8NBriXzCJkapvc1nQQFi
+I+kQ5Q7r
+-----END PRIVATE KEY-----`;
+    const teamId = process.env.APPLE_TEAM_ID;
+    const clientId = process.env.APPLE_CLIENT_ID;
+    const keyId = process.env.APPLE_KEY_ID;
+
+    const claims = {
+      iss: teamId,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 180,
+      aud: "https://appleid.apple.com",
+      sub: clientId,
+    };
+
+    return jwt.sign(claims, privateKey, {
+      algorithm: "ES256",
+      header: { alg: "ES256", kid: keyId },
+    });
+  } catch (error) {
+    logger.error("authControllers --> appleLoginUser --> error", error);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
 // FUNCTION TO LOGIN THE USER (USING GOOGLE LOGIN)
 const appleLoginUser = async (req, res) => {
   try {
@@ -120,13 +156,15 @@ const appleLoginUser = async (req, res) => {
       return errorResponse(res, message.TOKEN.TOKEN_EXPIRED, null, 401);
     }
 
+    logger.info(`DECODED TOKEN --> ${decodedToken}`);
+
     const { sub, email } = decodedToken;
 
     // GENERATE TOKENS
     const accessToken = generateAccessToken(sub, email);
     const refreshToken = generateRefreshToken(sub, email);
 
-    // // Find or create user in your database
+    // FIND OR CREATE A NEW USER
     let user = await User.findOne({ where: { email } });
 
     if (!user) {
@@ -144,42 +182,6 @@ const appleLoginUser = async (req, res) => {
       { accessToken, refreshToken, sub, email },
       200
     );
-  } catch (error) {
-    logger.error("authControllers --> appleLoginUser --> error", error);
-    return errorResponse(
-      res,
-      message.SERVER.INTERNAL_SERVER_ERROR,
-      error.message,
-      500
-    );
-  }
-};
-
-// Function to generate client_secret
-const generateAppleClientSecret = () => {
-  try {
-    const privateKey = `-----BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg8Ns+ikRhb3If6nW2
-c6Xp+J4IVhx13RpZRjDhd0d92J+gCgYIKoZIzj0DAQehRANCAAS/sbRehYOvEryw
-w9i61ZkzjSNASlfefEnYNx5jNK9ol2wBabD0pLVSyA4N8NBriXzCJkapvc1nQQFi
-I+kQ5Q7r
------END PRIVATE KEY-----`;
-    const teamId = process.env.APPLE_TEAM_ID;
-    const clientId = process.env.APPLE_CLIENT_ID;
-    const keyId = process.env.APPLE_KEY_ID;
-
-    const claims = {
-      iss: teamId,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 180,
-      aud: "https://appleid.apple.com",
-      sub: clientId,
-    };
-
-    return jwt.sign(claims, privateKey, {
-      algorithm: "ES256",
-      header: { alg: "ES256", kid: keyId },
-    });
   } catch (error) {
     logger.error("authControllers --> appleLoginUser --> error", error);
     return errorResponse(
