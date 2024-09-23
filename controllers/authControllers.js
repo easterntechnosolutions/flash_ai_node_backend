@@ -27,20 +27,21 @@ const googleLoginUser = async (req, res) => {
   try {
     logger.info("authControllers --> googleLoginUser --> reached");
 
-    const { name, email } = req.body;
+    const { name, email, id } = req.body;
 
-    let user = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { email, user_id: id } });
 
     if (!user) {
       user = await User.create({
         name,
         email,
+        user_id: id,
       });
     }
 
     // GENERATE TOKENS
-    const accessToken = generateAccessToken(user.id, user.email);
-    const refreshToken = generateRefreshToken(user.id, user.email);
+    const accessToken = generateAccessToken(user.user_id, user.email);
+    const refreshToken = generateRefreshToken(user.user_id, user.email);
 
     const userData = {
       accessToken,
