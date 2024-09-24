@@ -179,7 +179,7 @@ const getManualTextHistoryById = async (req, res) => {
 
     // Construct the final response object
     const responseObj = {
-      chatId: parseInt(id),
+      chatId: id,
       chats,
       chatReplies,
     };
@@ -218,13 +218,12 @@ const getImageTextHistoryById = async (req, res) => {
       `SELECT i.chat_id, i.image_url, cr.reply
        FROM Images i
        LEFT JOIN Chat_Replies cr ON i.chat_id = cr.chat_id
-       WHERE i.chat_id = :chat_id AND c.user_id = '${userId}'`,
+       WHERE i.chat_id = :chat_id AND i.user_id = '${userId}'`,
       {
         replacements: { chat_id: id },
         type: sequelize.QueryTypes.SELECT,
       }
     );
-    console.lo;
 
     if (!imageData.length) {
       return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
@@ -256,7 +255,7 @@ const getImageTextHistoryById = async (req, res) => {
 
     // Construct the final response object
     const responseObj = {
-      chatId: parseInt(id),
+      chatId: id,
       images,
       chatReplies,
     };
