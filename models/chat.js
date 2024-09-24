@@ -4,7 +4,10 @@ const { Model, DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   class Chat extends Model {
-    static associate(models) {}
+    static associate(models) {
+      // Each chat belongs to a user
+      Chat.belongsTo(models.User, { foreignKey: "user_id", as: "user" });
+    }
   }
   Chat.init(
     {
@@ -22,6 +25,10 @@ module.exports = (sequelize) => {
       },
       sequence: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      user_id: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
     },

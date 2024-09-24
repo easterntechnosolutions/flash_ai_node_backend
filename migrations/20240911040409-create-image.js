@@ -19,6 +19,14 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT("long"),
       },
+      user_id: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        references: {
+          model: "Users",
+          key: "user_id",
+        },
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

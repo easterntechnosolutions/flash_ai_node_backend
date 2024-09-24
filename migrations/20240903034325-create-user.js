@@ -13,6 +13,7 @@ module.exports = {
       },
       user_id: {
         type: Sequelize.STRING(50),
+        unique: true,
         allowNull: true,
       },
       name: {
@@ -22,7 +23,6 @@ module.exports = {
       email: {
         type: Sequelize.STRING(50),
         allowNull: false,
-        unique: true,
         validate: {
           isEmail: true,
         },

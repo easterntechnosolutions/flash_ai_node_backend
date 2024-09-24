@@ -17,8 +17,11 @@ const db = {
 };
 
 // Define model associations
-if (User.associate) {
-  User.associate(db);
-}
+User.associate({
+  Chat,
+  Image,
+});
+Chat.associate({ User });
+Image.associate({ User });
 
 module.exports = db;

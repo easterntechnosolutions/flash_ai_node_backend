@@ -4,12 +4,19 @@ const { Model, DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   class User extends Model {
-    static associate(models) {}
+    static associate(models) {
+      // One user can have many chats
+      User.hasMany(models.Chat, { foreignKey: "user_id", as: "chats" });
+
+      // One user can have many images
+      User.hasMany(models.Image, { foreignKey: "user_id", as: "images" });
+    }
   }
   User.init(
     {
       user_id: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: true,
       },
       name: {
@@ -19,7 +26,6 @@ module.exports = (sequelize) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         validate: {
           isEmail: true,
         },
