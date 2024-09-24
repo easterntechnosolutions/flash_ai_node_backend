@@ -164,10 +164,10 @@ const appleLoginUser = async (req, res) => {
     const accessToken = generateAccessToken(sub, email);
     const refreshToken = generateRefreshToken(sub, email);
 
-    // FIND OR CREATE A NEW USER
-    let user = await User.findOne({ where: { email } });
-
     let generatedUserName = email.split("@")[0];
+
+    // FIND OR CREATE A NEW USER
+    let user = await User.findOne({ where: { email, user_id: sub } });
 
     if (!user) {
       user = await User.create({

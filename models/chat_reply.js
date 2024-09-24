@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
   Chat_Reply.init(
     {
       chat_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       reply: {

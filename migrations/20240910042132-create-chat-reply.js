@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       chat_id: {
-        type: Sequelize.STRING(15),
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       reply: {

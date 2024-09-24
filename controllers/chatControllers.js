@@ -2,6 +2,8 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 const OpenAI = require("openai");
 const { PassThrough } = require("stream");
+const jwt = require("jsonwebtoken");
+const { v4: uuid4 } = require("uuid");
 
 // USER MODEL
 const { Chat, Image, Chat_Reply } = require("../models");
@@ -56,6 +58,12 @@ const chatCompletionsAI = async (req, res) => {
 // FUNCTION FOR MANUAL REPLY
 const chatCompletionsManual = async (req, res) => {
   try {
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
+
     const { messages, chat, chatId } = req.body;
 
     const completion = await openai.chat.completions.create({
@@ -73,12 +81,13 @@ const chatCompletionsManual = async (req, res) => {
     // AFTER SUCCESSFULL RESPONSE DATA SHOULD ADDED ON HISTORY
     let uniqueId;
     if (responseObj) {
-      uniqueId = chatId || Math.floor(100000 + Math.random() * 900000);
+      uniqueId = chatId || uuid4();
       if (chatId === null) {
         // FIRST BULK INSERT CHAT MESSAGES
         const updatedChat = chat.map((chatItem) => ({
           ...chatItem,
           chat_id: uniqueId,
+          user_id: userId,
         }));
         await Chat.bulkCreate(updatedChat);
 
@@ -102,6 +111,7 @@ const chatCompletionsManual = async (req, res) => {
     const updatedResponseObj = {
       reply: responseObj.reply,
       chatId: uniqueId,
+      user_id: userId,
     };
 
     return successResponse(
@@ -124,6 +134,12 @@ const chatCompletionsManual = async (req, res) => {
 // FUNCTION FOR IMAGE REPLY
 const chatCompletionsImage = async (req, res) => {
   try {
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
+
     const { messages, chatId } = req.body;
 
     const completion = await openai.chat.completions.create({
@@ -141,7 +157,7 @@ const chatCompletionsImage = async (req, res) => {
     let uniqueId;
     let imageUrl = null;
     if (responseObj) {
-      uniqueId = chatId || Math.floor(100000 + Math.random() * 900000);
+      uniqueId = chatId || uuid4();
       if (chatId === null) {
         // FIRST BULK INSERT CHAT MESSAGES
         for (const message of messages) {
@@ -162,6 +178,7 @@ const chatCompletionsImage = async (req, res) => {
         await Image.create({
           chat_id: uniqueId,
           image_url: imageUrl,
+          user_id: userId,
         });
 
         // // SECOND INSERT CHAT REPLY
@@ -184,6 +201,7 @@ const chatCompletionsImage = async (req, res) => {
     const updatedResponseObj = {
       reply: responseObj.reply,
       chatId: uniqueId,
+      user_id: userId,
     };
 
     return successResponse(

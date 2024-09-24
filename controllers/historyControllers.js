@@ -8,10 +8,18 @@ const logger = require("../core-configurations/logger-config/loggers");
 const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
 
+const jwt = require("jsonwebtoken");
+
 // FUNCTION TO GET ALL LIST OF HISTORY WITH CHAT AND IMAGE DATA
 const getAllHistory = async (req, res) => {
   try {
     logger.info("historyControllers --> getAllHistory --> reached");
+
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
 
     const { page = 1, pageSize = 10 } = req.query;
     const limit = parseInt(pageSize, 10);
@@ -24,6 +32,8 @@ const getAllHistory = async (req, res) => {
               i.image_url
        FROM Chats c
        LEFT JOIN Images i ON c.chat_id = i.chat_id
+       LEFT JOIN Users u ON u.user_id = c.user_id 
+       WHERE u.user_id = '${userId}'  
        GROUP BY c.chat_id, i.image_url
        
        UNION
@@ -32,8 +42,9 @@ const getAllHistory = async (req, res) => {
               NULL AS messages,
               i.image_url
        FROM Images i
+       LEFT JOIN Users u ON u.user_id = i.user_id
        LEFT JOIN Chats c ON i.chat_id = c.chat_id
-       WHERE c.chat_id IS NULL
+       WHERE u.user_id = '${userId}' AND c.chat_id IS NULL
        
        ORDER BY chat_id
        LIMIT :limit OFFSET :offset`,
@@ -49,14 +60,17 @@ const getAllHistory = async (req, res) => {
           SELECT c.chat_id
           FROM Chats c
           LEFT JOIN Images i ON c.chat_id = i.chat_id
+          LEFT JOIN Users u ON u.user_id = c.user_id  -- Join Chats with Users
+          WHERE u.user_id = '${userId}'  -- Filter by user_id
           GROUP BY c.chat_id, i.image_url
           
           UNION
           
           SELECT i.chat_id
           FROM Images i
+          LEFT JOIN Users u ON u.user_id = i.user_id  -- Join Images with Users
           LEFT JOIN Chats c ON i.chat_id = c.chat_id
-          WHERE c.chat_id IS NULL
+          WHERE u.user_id = '${userId}' AND c.chat_id IS NULL  -- Filter by user_id
       ) AS total`,
       {
         type: sequelize.QueryTypes.SELECT,
@@ -68,7 +82,7 @@ const getAllHistory = async (req, res) => {
     // Process the data to format the response
     const finalResponse = historyData.map((item) => {
       const chatResponse = {
-        chatId: parseInt(item.chat_id),
+        chatId: item.chat_id,
       };
 
       // Conditionally add chats if messages exist
@@ -115,6 +129,12 @@ const getManualTextHistoryById = async (req, res) => {
   try {
     logger.info("historyControllers --> getManualTextHistoryById --> reached");
 
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
+
     const { id } = req.params;
 
     // Manually perform an LEFT JOIN between Chat and Chat_Reply using raw SQL
@@ -122,7 +142,7 @@ const getManualTextHistoryById = async (req, res) => {
       `SELECT c.chat_id, c.message, c.me, c.sequence, cr.reply
        FROM Chats c
        LEFT JOIN Chat_Replies cr ON c.chat_id = cr.chat_id
-       WHERE c.chat_id = :chat_id`,
+       WHERE c.chat_id = :chat_id AND c.user_id = '${userId}'`,
       {
         replacements: { chat_id: id },
         type: sequelize.QueryTypes.SELECT,
@@ -185,6 +205,12 @@ const getImageTextHistoryById = async (req, res) => {
   try {
     logger.info("historyControllers --> getImageTextHistoryById --> reached");
 
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
+
     const { id } = req.params;
 
     // Manually perform an LEFT JOIN between Chat and Chat_Reply using raw SQL
@@ -192,7 +218,7 @@ const getImageTextHistoryById = async (req, res) => {
       `SELECT i.chat_id, i.image_url, cr.reply
        FROM Images i
        LEFT JOIN Chat_Replies cr ON i.chat_id = cr.chat_id
-       WHERE i.chat_id = :chat_id`,
+       WHERE i.chat_id = :chat_id AND c.user_id = '${userId}'`,
       {
         replacements: { chat_id: id },
         type: sequelize.QueryTypes.SELECT,

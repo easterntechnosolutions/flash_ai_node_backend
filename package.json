@@ -26,6 +26,7 @@
     "sequelize": "^6.37.3",
     "stripe": "^16.9.0",
     "url": "^0.11.4",
+    "uuid": "^10.0.0",
     "winston": "^3.14.2"
   },
   "devDependencies": {

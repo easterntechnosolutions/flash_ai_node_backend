@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
   Chat.init(
     {
       chat_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       message: {
