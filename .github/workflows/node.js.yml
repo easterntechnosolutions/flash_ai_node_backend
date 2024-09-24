@@ -38,6 +38,6 @@ jobs:
           port: 22
           script: |
             cd /home/ec2-user/flash_ai_node_backend
-            git pull origin main
+            git pull origin develop
             npm install
             pm2 restart all || pm2 start app.js --name "flash_ai_node_backend"
