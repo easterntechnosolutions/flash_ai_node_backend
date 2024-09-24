@@ -16,10 +16,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
+
+      - name: Run tests
+        run: npm test
 
       - name: Build application
         run: npm run build
@@ -48,6 +51,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd /home/ec2-user/your-app
+            cd /home/ec2-user/flash_ai_node_backend
             npm install
             pm2 restart all || pm2 start app.js --name "flash_ai_node_backend"
