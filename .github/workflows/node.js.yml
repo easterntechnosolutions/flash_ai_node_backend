@@ -29,22 +29,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Copy files via SCP
-        uses: appleboy/scp-action@v0.1.1
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "."
-          target: "/home/ec2-user/flash_ai_node_backend"
-
-      - name: SSH and Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           script: |
             cd /home/ec2-user/flash_ai_node_backend
+            git pull origin main
             npm install
             pm2 restart all || pm2 start app.js --name "flash_ai_node_backend"
