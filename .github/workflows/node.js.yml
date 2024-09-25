@@ -29,6 +29,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Add SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.6
         with:
