@@ -29,13 +29,17 @@ const googleLoginUser = async (req, res) => {
 
     const { name, email, id } = req.body;
 
-    let user = await User.findOne({ where: { email, user_id: id } });
+    // Find the user by email and check if is_google is set to "1"
+    let user = await User.findOne({
+      where: { email, is_google: "1" },
+    });
 
     if (!user) {
       user = await User.create({
         name,
         email,
         user_id: id,
+        is_google: "1",
       });
     }
 
@@ -175,6 +179,7 @@ const appleLoginUser = async (req, res) => {
         name: generatedUserName,
         email,
         user_id: sub,
+        is_google: "0",
       });
     }
 

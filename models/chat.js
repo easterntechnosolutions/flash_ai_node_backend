@@ -6,7 +6,10 @@ module.exports = (sequelize) => {
   class Chat extends Model {
     static associate(models) {
       // Each chat belongs to a user
-      Chat.belongsTo(models.User, { foreignKey: "user_id", as: "user" });
+      Chat.belongsTo(models.User, {
+        foreignKey: "user_id",
+        as: "user",
+      });
     }
   }
   Chat.init(
@@ -30,6 +33,10 @@ module.exports = (sequelize) => {
       user_id: {
         type: DataTypes.STRING,
         allowNull: false,
+        references: {
+          model: "Users",
+          key: "user_id",
+        },
       },
     },
     {

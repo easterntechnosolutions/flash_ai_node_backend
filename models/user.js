@@ -6,10 +6,16 @@ module.exports = (sequelize) => {
   class User extends Model {
     static associate(models) {
       // One user can have many chats
-      User.hasMany(models.Chat, { foreignKey: "user_id", as: "chats" });
+      User.hasMany(models.Chat, {
+        foreignKey: "user_id",
+        as: "chats",
+      });
 
       // One user can have many images
-      User.hasMany(models.Image, { foreignKey: "user_id", as: "images" });
+      User.hasMany(models.Image, {
+        foreignKey: "user_id",
+        as: "images",
+      });
     }
   }
   User.init(
@@ -29,6 +35,10 @@ module.exports = (sequelize) => {
         validate: {
           isEmail: true,
         },
+      },
+      is_google: {
+        type: DataTypes.CHAR,
+        allowNull: false,
       },
     },
     {

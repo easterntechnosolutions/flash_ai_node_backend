@@ -6,7 +6,10 @@ module.exports = (sequelize) => {
   class Image extends Model {
     static associate(models) {
       // Each image belongs to a user
-      Image.belongsTo(models.User, { foreignKey: "user_id", as: "user" });
+      Image.belongsTo(models.User, {
+        foreignKey: "user_id",
+        as: "user",
+      });
     }
   }
   Image.init(
@@ -22,6 +25,10 @@ module.exports = (sequelize) => {
       user_id: {
         type: DataTypes.STRING,
         allowNull: false,
+        references: {
+          model: "Users",
+          key: "user_id",
+        },
       },
     },
     {

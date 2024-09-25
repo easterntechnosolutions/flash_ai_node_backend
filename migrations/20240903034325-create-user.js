@@ -27,6 +27,10 @@ module.exports = {
           isEmail: true,
         },
       },
+      is_google: {
+        type: Sequelize.CHAR(10),
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
