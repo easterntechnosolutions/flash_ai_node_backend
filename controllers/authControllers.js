@@ -168,6 +168,7 @@ const appleLoginUser = async (req, res) => {
 
     // FIND OR CREATE A NEW USER
     let user = await User.findOne({ where: { email, user_id: sub } });
+    console.log("USER ::: ", user);
 
     if (!user) {
       user = await User.create({
