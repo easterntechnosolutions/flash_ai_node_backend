@@ -9,7 +9,10 @@ module.exports = {
   },
   AUTH: {
     VERIFIED_USER: "Verified User Successfully",
-    ALREADY_REGISTERED_WITH_GOOGLE: "User already registered using Google",
+    EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ID:
+      "This email is already registered with a different Google ID.",
+    ID_ALREADY_REGISTERED_WITH_DIFFERENT_EMAIL:
+      "This ID is already registered with a different email.",
     INVALID_USER: "Invalid email or user does not exist",
     INVALID_FORMAT: "Invalid Format",
     ACCESS_DENIED: "Access Denied",

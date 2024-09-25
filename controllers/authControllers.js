@@ -30,32 +30,89 @@ const googleLoginUser = async (req, res) => {
     const { name, email, id } = req.body;
 
     // Find the user by email and check if is_google is set to "1"
-    let user = await User.findOne({
+    let userByEmail = await User.findOne({
       where: { email, is_google: "1" },
     });
 
-    if (!user) {
-      user = await User.create({
+    // Find the user by id and check if is_google is set to "1"
+    let userById = await User.findOne({
+      where: { user_id: id, is_google: "1" },
+    });
+
+    // Condition 1: New user with a new Gmail and new ID
+    if (!userByEmail && !userById) {
+      // No user found with this email or id, so create a new user
+      const newUser = await User.create({
         name,
         email,
         user_id: id,
         is_google: "1",
       });
+
+      // Generate tokens
+      const accessToken = generateAccessToken(newUser.user_id, newUser.email);
+      const refreshToken = generateRefreshToken(newUser.user_id, newUser.email);
+
+      const userData = {
+        accessToken,
+        refreshToken,
+        name: newUser.name,
+        email: newUser.email,
+      };
+
+      logger.info("authControllers --> googleLoginUser --> new user created");
+      return successResponse(res, message.AUTH.VERIFIED_USER, userData, 200);
     }
 
-    // GENERATE TOKENS
-    const accessToken = generateAccessToken(user.user_id, user.email);
-    const refreshToken = generateRefreshToken(user.user_id, user.email);
+    // Condition 2: Same Gmail, is_google = Y, but different ID
+    if (userByEmail && userByEmail.user_id !== id) {
+      logger.warn(
+        "authControllers --> googleLoginUser --> different ID with same Gmail"
+      );
+      return errorResponse(
+        res,
+        message.AUTH.EMAIL_ALREADY_REGISTERED_WITH_DIFFERENT_ID,
+        null,
+        400
+      );
+    }
 
-    const userData = {
-      accessToken,
-      refreshToken,
-      name: user.name,
-      email: user.email,
-    };
+    // Condition 3: New Gmail, is_google = Y, but existing ID
+    if (userById && userById.email !== email) {
+      logger.warn(
+        "authControllers --> googleLoginUser --> different Gmail with same ID"
+      );
+      return errorResponse(
+        res,
+        message.AUTH.ID_ALREADY_REGISTERED_WITH_DIFFERENT_EMAIL,
+        null,
+        400
+      );
+    }
 
-    logger.info("authControllers --> googleLoginUser --> ended");
-    return successResponse(res, message.AUTH.VERIFIED_USER, userData, 200);
+    // If the user exists with the same email and ID, log them in
+    if (userByEmail && userByEmail.user_id === id) {
+      const accessToken = generateAccessToken(
+        userByEmail.user_id,
+        userByEmail.email
+      );
+      const refreshToken = generateRefreshToken(
+        userByEmail.user_id,
+        userByEmail.email
+      );
+
+      const userData = {
+        accessToken,
+        refreshToken,
+        name: userByEmail.name,
+        email: userByEmail.email,
+      };
+
+      logger.info(
+        "authControllers --> googleLoginUser --> existing user logged in"
+      );
+      return successResponse(res, message.AUTH.VERIFIED_USER, userData, 200);
+    }
   } catch (error) {
     logger.error("authControllers --> googleLoginUser --> error", error);
     return errorResponse(
