@@ -9,7 +9,7 @@ const loggers = createLogger({
   format: combine(timestamp(), customFormat),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: "Flash_AI_Backend.log" }),
+    new transports.File({ filename: "flash_ai_backend.log" }),
   ],
 });
 

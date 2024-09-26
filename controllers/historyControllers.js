@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
 // MODELS
 const { Chat, Image, Chat_Reply, sequelize } = require("../models");
@@ -9,6 +10,12 @@ const logger = require("../core-configurations/logger-config/loggers");
 // UTILS
 const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
+
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
 
 // FUNCTION TO GET ALL LIST OF HISTORY
 const getAllHistory = async (req, res) => {

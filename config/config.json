@@ -14,10 +14,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": "root",
-    "database": "flash_ai_backend_production",
-    "host": "127.0.0.1",
+    "username": "admin",
+    "password": "admin123",
+    "database": "flash_ai_backend",
+    "host": "flash-ai-database-instance.c14ee0gie7tq.us-east-1.rds.amazonaws.com",
     "dialect": "mysql"
   }
 }

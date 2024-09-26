@@ -8,7 +8,11 @@ const logger = require("../core-configurations/logger-config/loggers");
 const message = require("../utils/commonMessages");
 const { errorResponse, successResponse } = require("../utils/handleResponses");
 
-dotenv.config();
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
 
 // FUNCTION FOR AI REPLY
 const getAllTweets = async (req, res) => {

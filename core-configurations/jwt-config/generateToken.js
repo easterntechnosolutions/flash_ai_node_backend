@@ -1,7 +1,11 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
-dotenv.config();
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
 
 const generateAccessToken = (userId, email) => {
   return jwt.sign({ userId, email }, process.env.JWT_SECRET, {

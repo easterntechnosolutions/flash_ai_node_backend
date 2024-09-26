@@ -4,7 +4,11 @@ const { Sequelize } = require("sequelize");
 // CORE-CONFIG MODULES
 const logger = require("../logger-config/loggers");
 
-dotenv.config();
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
 
 const infoLogger = {
   info: (msg) => logger.info(msg),

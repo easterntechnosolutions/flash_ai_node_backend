@@ -21,7 +21,13 @@ const historyRoutes = require("./routes/historyRoutes");
 const loggerMiddleware = require("./middlewares/loggerMiddleware");
 const { verifyToken } = require("./middlewares/verifyToken");
 
-dotenv.config();
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
+
+logger.info(`----->>>> Running in ${environment} environment <<<<-----`);
 
 const PORT = process.env.PORT || 8080;
 

@@ -20,7 +20,11 @@ const message = require("../utils/commonMessages");
 // MIDDLEWARE
 const { addToBlacklist } = require("../middlewares/blackListToken");
 
-dotenv.config();
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
 
 // FUNCTION TO LOGIN THE USER (USING GOOGLE LOGIN)
 const googleLoginUser = async (req, res) => {

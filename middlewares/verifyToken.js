@@ -11,7 +11,11 @@ const { errorResponse } = require("../utils/handleResponses");
 // MIDDLEWARE
 const { isBlacklisted } = require("./blackListToken");
 
-dotenv.config();
+// Determine the environment (default to 'development')
+const environment = process.env.NODE_ENV || "development";
+
+// Load the appropriate .env file
+dotenv.config({ path: `.env.${environment}` });
 
 // THIS FUNCTIONALITY WILL VERIFY THE GENERATED TOKEN AND PROVIDE THE ACCESS TO FURTHER ROUTES.
 const verifyToken = (req, res, next) => {
