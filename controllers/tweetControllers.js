@@ -58,7 +58,7 @@ const getAllTweets = async (req, res) => {
       200
     );
   } catch (error) {
-    logger.error("tweetControllers --> getAllTweets --> error", error);
+    logger.error(`Error in get all tweets: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,

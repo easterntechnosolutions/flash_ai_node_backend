@@ -5,7 +5,7 @@ const { PassThrough } = require("stream");
 const jwt = require("jsonwebtoken");
 const { v4: uuid4 } = require("uuid");
 
-// USER MODEL
+// MODELS
 const { Chat, Image, Chat_Reply } = require("../models");
 
 // CORE-CONFIG MODULES
@@ -14,7 +14,6 @@ const logger = require("../core-configurations/logger-config/loggers");
 // UTILS MODULES
 const message = require("../utils/commonMessages");
 const { successResponse, errorResponse } = require("../utils/handleResponses");
-const { type } = require("os");
 
 dotenv.config();
 
@@ -51,7 +50,13 @@ const chatCompletionsAI = async (req, res) => {
 
     logger.info("Successfully connected to OpenAI API and streaming data.");
   } catch (error) {
-    console.log("ERROR IN AI REPLY CHAT COMPLETIONS ::: ", error);
+    logger.error(`Error in AI reply chat completions: ${error.message}`);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
   }
 };
 
@@ -121,7 +126,7 @@ const chatCompletionsManual = async (req, res) => {
       200
     );
   } catch (error) {
-    console.log("ERROR IN MANUAL REPLY CHAT COMPLETIONS ::: ", error);
+    logger.error(`Error in Manual reply chat completions: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -211,7 +216,7 @@ const chatCompletionsImage = async (req, res) => {
       200
     );
   } catch (error) {
-    console.log("ERROR IN MANUAL REPLY CHAT COMPLETIONS ::: ", error);
+    logger.error(`Error in Image reply chat completions: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,

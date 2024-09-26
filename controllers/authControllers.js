@@ -114,7 +114,7 @@ const googleLoginUser = async (req, res) => {
       return successResponse(res, message.AUTH.VERIFIED_USER, userData, 200);
     }
   } catch (error) {
-    logger.error("authControllers --> googleLoginUser --> error", error);
+    logger.error(`Error in google login user: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -138,12 +138,7 @@ const getKey = async (kid) => {
 // FUNCTION TO GENERATE CLINET SECRET
 const generateAppleClientSecret = () => {
   try {
-    const privateKey = `-----BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg8Ns+ikRhb3If6nW2
-c6Xp+J4IVhx13RpZRjDhd0d92J+gCgYIKoZIzj0DAQehRANCAAS/sbRehYOvEryw
-w9i61ZkzjSNASlfefEnYNx5jNK9ol2wBabD0pLVSyA4N8NBriXzCJkapvc1nQQFi
-I+kQ5Q7r
------END PRIVATE KEY-----`;
+    const privateKey = process.env.APPLE_PRIVATE_KEY;
     const teamId = process.env.APPLE_TEAM_ID;
     const clientId = process.env.APPLE_CLIENT_ID;
     const keyId = process.env.APPLE_KEY_ID;
@@ -229,7 +224,6 @@ const appleLoginUser = async (req, res) => {
 
     // FIND OR CREATE A NEW USER
     let user = await User.findOne({ where: { email, user_id: sub } });
-    console.log("USER ::: ", user);
 
     if (!user) {
       user = await User.create({
@@ -248,7 +242,7 @@ const appleLoginUser = async (req, res) => {
       200
     );
   } catch (error) {
-    logger.error("authControllers --> appleLoginUser --> error", error);
+    logger.error(`Error in apple login user: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -275,7 +269,7 @@ const logoutUser = (req, res) => {
     logger.info("authControllers --> logoutUser --> ended");
     return successResponse(res, message.AUTH.LOGOUT, null, 200);
   } catch (error) {
-    logger.error("authControllers --> logoutUser --> error", error);
+    logger.error(`Error in logout user: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -305,7 +299,7 @@ const refreshAccessToken = (req, res) => {
       200
     );
   } catch (error) {
-    logger.error("authControllers --> refreshAccessToken --> error", error);
+    logger.error(`Error in refresh token: ${error.message}`);
     if (error.name === "TokenExpiredError") {
       logger.error("Token has expired ::: ", error);
       return errorResponse(

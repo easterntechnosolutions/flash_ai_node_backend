@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 // MODELS
 const { Chat, Image, Chat_Reply, sequelize } = require("../models");
 
@@ -8,9 +10,7 @@ const logger = require("../core-configurations/logger-config/loggers");
 const { successResponse, errorResponse } = require("../utils/handleResponses");
 const message = require("../utils/commonMessages");
 
-const jwt = require("jsonwebtoken");
-
-// FUNCTION TO GET ALL LIST OF HISTORY WITH CHAT AND IMAGE DATA
+// FUNCTION TO GET ALL LIST OF HISTORY
 const getAllHistory = async (req, res) => {
   try {
     logger.info("historyControllers --> getAllHistory --> reached");
@@ -114,7 +114,7 @@ const getAllHistory = async (req, res) => {
       200
     );
   } catch (error) {
-    logger.error("historyControllers --> getAllHistory --> error", error);
+    logger.error(`Error in get all history: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -187,10 +187,7 @@ const getManualTextHistoryById = async (req, res) => {
     logger.info("historyControllers --> getManualTextHistoryById --> ended");
     return successResponse(res, message.COMMON.FETCH_SUCCESS, responseObj, 200);
   } catch (error) {
-    logger.error(
-      "historyControllers --> getManualTextHistoryById --> error",
-      error
-    );
+    logger.error(`Error in get manual history: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -263,10 +260,7 @@ const getImageTextHistoryById = async (req, res) => {
     logger.info("historyControllers --> getImageTextHistoryById --> ended");
     return successResponse(res, message.COMMON.FETCH_SUCCESS, responseObj, 200);
   } catch (error) {
-    logger.error(
-      "historyControllers --> getImageTextHistoryById --> error",
-      error
-    );
+    logger.error(`Error in get image history: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
