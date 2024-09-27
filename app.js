@@ -16,6 +16,7 @@ const authRoutes = require("./routes/authRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const tweetRoutes = require("./routes/tweetRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const featuresRoutes = require("./routes/featuresRoutes");
 
 // MIDDLEWARES MODULES
 const loggerMiddleware = require("./middlewares/loggerMiddleware");
@@ -85,6 +86,9 @@ app.use(`${process.env.BASE_URL}/tweets`, tweetRoutes);
 
 // HISTORY ROUTES
 app.use(`${process.env.BASE_URL}/history`, historyRoutes);
+
+// FEATURES ROUTES
+app.use(`${process.env.BASE_URL}/features`, featuresRoutes);
 
 // AUTHENTICATE SEQUELIZE AND ESTABLISH CONNECTION WITH DB
 db.sequelize
