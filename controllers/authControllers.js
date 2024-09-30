@@ -318,9 +318,87 @@ const refreshAccessToken = (req, res) => {
     }
   }
 };
+
+// FUNCTION FOR GET USER DETAIL BY ID
+const getUserById = async (req, res) => {
+  try {
+    logger.info("authControllers --> getUserById --> reached");
+
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
+
+    // Find the user by its user_id
+    const user = await User.findOne({ where: { user_id: userId } });
+
+    // If user not found, return a 404 response
+    if (!user) {
+      logger.warn(`User with ID: ${id} not found.`);
+      return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
+    }
+
+    logger.info("authControllers --> getUserById --> ended");
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, user, 200);
+  } catch (error) {
+    logger.error(`Error in get user by user_id: ${error.message}`);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
+// FUNCTION FOR UPDATE USER DETAIL BY ID
+const updateUserById = async (req, res) => {
+  try {
+    logger.info("authControllers --> updateUserById --> reached");
+
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
+
+    const { name, email } = req.body;
+
+    // Find the user by its user_id
+    const user = await User.findOne({ where: { user_id: userId } });
+
+    // If user not found, return a 404 response
+    if (!user) {
+      logger.warn(`User with ID: ${id} not found.`);
+      return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
+    }
+
+    // Update the user's details
+    user.name = name || user.name;
+    user.email = email || user.email;
+
+    // Save the updated user details in the database
+    await user.save();
+
+    logger.info("authControllers --> updateUserById --> ended");
+    return successResponse(res, message.COMMON.UPDATE_SUCCESS, user, 200);
+  } catch (error) {
+    logger.error(`Error in get user by user_id: ${error.message}`);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
 module.exports = {
   googleLoginUser,
   appleLoginUser,
   logoutUser,
   refreshAccessToken,
+  getUserById,
+  updateUserById,
 };

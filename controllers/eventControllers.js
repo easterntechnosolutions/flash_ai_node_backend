@@ -53,7 +53,7 @@ const createNewEvents = async (req, res) => {
   }
 };
 
-// FUNCTION FOR CREATE A NEW EVENTS
+// FUNCTION FOR GET ALL LIST OF EVENTS
 const getAllEvents = async (req, res) => {
   try {
     logger.info("eventControllers --> getAllEvents --> reached");
@@ -82,7 +82,7 @@ const getAllEvents = async (req, res) => {
     logger.info("eventControllers --> getAllEvents --> ended");
     return successResponse(
       res,
-      message.COMMON.CREATE_SUCCESS,
+      message.COMMON.LIST_FETCH_SUCCESS,
       responseData,
       200
     );
@@ -97,4 +97,67 @@ const getAllEvents = async (req, res) => {
   }
 };
 
-module.exports = { createNewEvents, getAllEvents };
+// FUNCTION FOR GET EVENT BY ID
+const getEventById = async (req, res) => {
+  try {
+    logger.info("eventControllers --> getEventById --> reached");
+
+    const { id } = req.params;
+
+    // Find the event by its primary key (ID)
+    const event = await Event.findByPk(id);
+
+    // If event not found, return a 404 response
+    if (!event) {
+      logger.warn(`Event with ID ${id} not found.`);
+      return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
+    }
+
+    logger.info("eventControllers --> getEventById --> ended");
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, event, 200);
+  } catch (error) {
+    logger.error(`Error in get all events: ${error.message}`);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
+// FUNCTION FOR CREATE A NEW EVENTS
+const getEventByUserId = async (req, res) => {
+  try {
+    logger.info("eventControllers --> getEventByUserId --> reached");
+
+    const { id } = req.params;
+
+    // Find the event by its primary key (ID)
+    const event = await Event.findByPk(id);
+
+    // If event not found, return a 404 response
+    if (!event) {
+      logger.warn(`Event with ID ${id} not found.`);
+      return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
+    }
+
+    logger.info("eventControllers --> getEventByUserId --> ended");
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, event, 200);
+  } catch (error) {
+    logger.error(`Error in get all events: ${error.message}`);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
+module.exports = {
+  createNewEvents,
+  getAllEvents,
+  getEventById,
+  getEventByUserId,
+};

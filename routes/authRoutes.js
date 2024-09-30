@@ -6,6 +6,8 @@ const {
   appleLoginUser,
   logoutUser,
   refreshAccessToken,
+  getUserById,
+  updateUserById,
 } = require("../controllers/authControllers");
 
 // MIDDLEWARE
@@ -21,5 +23,9 @@ router.post("/apple-login", appleLoginUser);
 
 router.post("/logout", logoutUser);
 router.post("/refresh-token", refreshAccessToken);
+
+// FOR USER
+router.get("/", getUserById);
+router.put("/", updateUserById);
 
 module.exports = router;
