@@ -231,9 +231,67 @@ const profileBuilderAI = async (req, res) => {
   }
 };
 
+// FUNCTION FOR BEST MATCH FINDER AI
+const bestMatchFinderAI = async (req, res) => {
+  try {
+    logger.info("featuresControllers --> bestMatchFinderAI --> reached");
+
+    const { messages } = req.body;
+
+    const defaultUserMessage = {
+      role: "user",
+      content:
+        "Hi, I'm looking for help finding the best match for me. I want someone who shares similar interests, values, and life goals. Can you help me analyze my preferences and suggest the ideal match?",
+    };
+
+    const defaultSystemMessage = {
+      role: "system",
+      content:
+        "As the Best Match Finder assistant, your role is to help the user identify potential matches based on their unique preferences, values, and interests. Your goal is to offer suggestions and advice that help the user find meaningful connections. Make sure the conversation is interactive, offering personalized suggestions while ensuring the user's preferences are analyzed thoroughly.",
+    };
+
+    // Send the user preferences along with the messages
+    const response = await axios({
+      method: "post",
+      url: "https://api.openai.com/v1/chat/completions",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.APIKEY}`,
+      },
+      data: {
+        model: "gpt-4o-mini",
+        messages: messages || [defaultUserMessage, defaultSystemMessage],
+      },
+    });
+
+    const aiResponses = response.data.choices.flatMap((choice) => {
+      let lines = choice.message.content
+        .split("|")
+        .filter((line) => line.trim() !== "");
+
+      lines = lines.map((line) => line.replace(/^\d+\.\s*/, ""));
+
+      return lines;
+    });
+
+    logger.info("featuresControllers --> bestMatchFinderAI --> ended");
+
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, aiResponses, 200);
+  } catch (error) {
+    logger.error(`Error in Best Match Finder AI: ${error.message}`);
+    return errorResponse(
+      res,
+      message.SERVER.INTERNAL_SERVER_ERROR,
+      error.message,
+      500
+    );
+  }
+};
+
 module.exports = {
   dateMateAI,
   virtualDateAI,
   localDateEventsFinderAI,
   profileBuilderAI,
+  bestMatchFinderAI,
 };
