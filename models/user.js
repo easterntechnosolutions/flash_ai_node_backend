@@ -16,6 +16,12 @@ module.exports = (sequelize) => {
         foreignKey: "user_id",
         as: "images",
       });
+
+      // One user can have many events
+      User.hasMany(models.Event, {
+        foreignKey: "user_id",
+        as: "events",
+      });
     }
   }
   User.init(
