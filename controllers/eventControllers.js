@@ -43,7 +43,7 @@ const createNewEvents = async (req, res) => {
     logger.info("eventControllers --> createNewEvents --> ended");
     return successResponse(res, message.COMMON.CREATE_SUCCESS, response, 201);
   } catch (error) {
-    logger.error(`Error in Create a new events: ${error.message}`);
+    logger.error(`Error in create a new events: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -116,7 +116,7 @@ const getEventById = async (req, res) => {
     logger.info("eventControllers --> getEventById --> ended");
     return successResponse(res, message.COMMON.FETCH_SUCCESS, event, 200);
   } catch (error) {
-    logger.error(`Error in get all events: ${error.message}`);
+    logger.error(`Error in get event by id: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
@@ -126,26 +126,30 @@ const getEventById = async (req, res) => {
   }
 };
 
-// FUNCTION FOR CREATE A NEW EVENTS
+// FUNCTION FOR GET EVENTS BY USER ID
 const getEventByUserId = async (req, res) => {
   try {
     logger.info("eventControllers --> getEventByUserId --> reached");
 
-    const { id } = req.params;
+    const token =
+      req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { userId } = decoded;
 
     // Find the event by its primary key (ID)
-    const event = await Event.findByPk(id);
+    const events = await Event.findAll({ where: { user_id: userId } });
 
-    // If event not found, return a 404 response
-    if (!event) {
-      logger.warn(`Event with ID ${id} not found.`);
+    // If no events found for the user, return a 404 response
+    if (events.length === 0) {
+      logger.warn(`No events found for userId ${userId}.`);
       return errorResponse(res, message.COMMON.NOT_FOUND, null, 404);
     }
 
     logger.info("eventControllers --> getEventByUserId --> ended");
-    return successResponse(res, message.COMMON.FETCH_SUCCESS, event, 200);
+    return successResponse(res, message.COMMON.FETCH_SUCCESS, events, 200);
   } catch (error) {
-    logger.error(`Error in get all events: ${error.message}`);
+    logger.error(`Error in get event by user id: ${error.message}`);
     return errorResponse(
       res,
       message.SERVER.INTERNAL_SERVER_ERROR,
