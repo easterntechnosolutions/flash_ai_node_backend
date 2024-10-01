@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run tests (Optional)
+        run: npm test
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -45,4 +48,14 @@ jobs:
             cd /home/ec2-user/flash_ai_node_backend
             git pull origin develop
             npm install
-            pm2 restart all || pm2 start app.js --name "flash_ai_node_backend"
+
+            # Ensure PM2 is installed globally
+            pm2 -v || npm install -g pm2
+
+            # Restart or start the app with PM2
+            pm2 restart flash_ai_node_backend || pm2 start app.js --name "flash_ai_node_backend"
+
+      - name: Verify Deployment
+        run: |
+          echo "Checking the status of the deployed app"
+          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'pm2 status'
