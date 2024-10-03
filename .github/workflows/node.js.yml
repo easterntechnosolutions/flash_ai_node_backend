@@ -44,9 +44,9 @@ jobs:
           script: |
             cd /home/ec2-user/flash_ai_node_backend
             git config --global --add safe.directory /home/ec2-user/flash_ai_node_backend
-            git pull origin develop
-            yum update
+            sudo git pull origin develop
+            sudo yum update -y
             curl -sL https://rpm.nodesource.com/setup_20.x | sudo bash -
-            yum install -y nodejs
-            npm install
-            node app.js
+            sudo yum install -y nodejs
+            sudo npm install
+            sudo node app.js
