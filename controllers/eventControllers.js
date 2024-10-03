@@ -72,7 +72,7 @@ const getAllEvents = async (req, res) => {
     });
 
     // Prepare the paginated response
-    const responseData = {
+    const eventsData = {
       events: finalResponse,
       total: totalRecords,
       page: parseInt(page, 10),
@@ -83,7 +83,7 @@ const getAllEvents = async (req, res) => {
     return successResponse(
       res,
       message.COMMON.LIST_FETCH_SUCCESS,
-      responseData,
+      eventsData,
       200
     );
   } catch (error) {
