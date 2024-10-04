@@ -16,7 +16,7 @@ const environment = process.env.NODE_ENV || "development";
 // Load the appropriate .env file
 dotenv.config({ path: `.env.${environment}` });
 
-const apiKey =
+const conditionAPIKey =
   process.env.NODE_ENV === "production"
     ? process.env.OPENAI_API_KEY
     : process.env.APIKEY;
@@ -51,7 +51,7 @@ const dateMateAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${conditionAPIKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -102,7 +102,7 @@ const virtualDateAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${conditionAPIKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -158,7 +158,7 @@ const localDateEventsFinderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${conditionAPIKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -216,7 +216,7 @@ const profileBuilderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${conditionAPIKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -275,7 +275,7 @@ const bestMatchFinderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${conditionAPIKey}`,
       },
       data: {
         model: "gpt-4o-mini",
