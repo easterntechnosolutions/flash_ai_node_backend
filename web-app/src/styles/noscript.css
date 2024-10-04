@@ -1,0 +1,21 @@
+@layer noscript {
+	/* Display */
+	.noscript\:hidden {
+		display: none; 
+	}
+
+	/* Height */
+	.noscript\:h-reset {
+		height: initial;
+	}
+
+	/* Flex */
+	.noscript\:flex-col {
+		flex-direction: column;
+	}
+
+	/* Gap */
+	.noscript\:gap-12 {
+		gap: 3rem; /* 48px */
+	}
+}

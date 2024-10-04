@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 
 // CORE CONFIG MODULES
 const logger = require("./core-configurations/logger-config/loggers");
@@ -67,8 +68,7 @@ app.use(loggerMiddleware);
 
 // TEST ROUTES
 app.get("/", (req, res) => {
-  res.status(200).send("HELLO WORLD....");
-  res.end();
+  res.sendFile(path.join(__dirname, "web-app", "index.html"));
 });
 
 // ---------------- PUBLIC ROUTES -----------------------

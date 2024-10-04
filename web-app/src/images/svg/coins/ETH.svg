@@ -1,0 +1,29 @@
+<svg 
+	viewBox="0 0 112 112"
+	width="112" height="112" 
+	aria-labelledby="eth-title" 
+	role="img"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:svg="http://www.w3.org/2000/svg"
+>
+	<title id="eth-title">Ethereum Icon</title>
+	<defs>
+		<linearGradient id="g1" x1="1" x2="0" y2="1">
+			<stop stop-color="#EEEDF1" />
+			<stop offset="0.84" stop-color="#FFF" />
+		</linearGradient>
+	</defs>
+	<g class="layer">
+		<rect fill="url(#g1)" height="112" id="svg_2" rx="56" width="112" x="0" y="0" />
+		<g id="svg_3">
+			<path d="m56.24,17.75l-0.51,1.71l0,49.53l0.51,0.5l23.49,-13.59l-23.49,-38.15z" fill="#343434"
+				id="svg_4" />
+			<path d="m56.24,17.75l-23.49,38.15l23.49,13.59l0,-24.04l0,-27.7z" fill="#8C8C8C" id="svg_5" />
+			<path d="m56.24,73.84l-0.29,0.34l0,17.64l0.29,0.83l23.51,-32.4l-23.51,13.58l0,0.01z"
+				fill="#3C3C3B" id="svg_6" />
+			<path d="m56.24,92.66l0,-18.82l-23.49,-13.58l23.49,32.4z" fill="#8C8C8C" id="svg_7" />
+			<path d="m56.24,69.49l23.49,-13.59l-23.49,-10.45l0,24.04z" fill="#141414" id="svg_8" />
+			<path d="m32.75,55.9l23.49,13.59l0,-24.04l-23.49,10.45z" fill="#393939" id="svg_9" />
+		</g>
+	</g>
+</svg>
