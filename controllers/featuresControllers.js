@@ -16,6 +16,11 @@ const environment = process.env.NODE_ENV || "development";
 // Load the appropriate .env file
 dotenv.config({ path: `.env.${environment}` });
 
+const apiKey =
+  process.env.NODE_ENV === "production"
+    ? process.env.OPENAI_API_KEY
+    : process.env.APIKEY;
+
 // FUNCTION FOR DATE MATE AI
 const dateMateAI = async (req, res) => {
   try {
@@ -46,7 +51,7 @@ const dateMateAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.APIKEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -97,7 +102,7 @@ const virtualDateAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.APIKEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -153,7 +158,7 @@ const localDateEventsFinderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.APIKEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -211,7 +216,7 @@ const profileBuilderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.APIKEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -270,7 +275,7 @@ const bestMatchFinderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.APIKEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       data: {
         model: "gpt-4o-mini",

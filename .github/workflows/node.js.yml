@@ -42,12 +42,28 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            # Navigate to the application directory
             cd /home/ec2-user/flash_ai_node_backend
+
+            # Set up Git configuration for safe directory
             git config --global --add safe.directory /home/ec2-user/flash_ai_node_backend
+
+            # Pull the latest code from the develop branch
             sudo git pull origin develop
+
+            # Update the system and install Node.js if necessary
             sudo yum update -y
             curl -sL https://rpm.nodesource.com/setup_20.x | sudo bash -
             sudo yum install -y nodejs
+
+            # Install application dependencies
             sudo npm install
+
+            # Install PM2 globally if not already installed
             sudo npm install -g pm2
+
+            # Export OpenAI API Key as an environment variable for the application
+            export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+
+            # Start or restart the application using PM2
             pm2 start ecosystem.config.js --env production

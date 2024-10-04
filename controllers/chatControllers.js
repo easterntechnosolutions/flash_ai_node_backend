@@ -21,9 +21,14 @@ const environment = process.env.NODE_ENV || "development";
 // Load the appropriate .env file
 dotenv.config({ path: `.env.${environment}` });
 
+const apiKey =
+  process.env.NODE_ENV === "production"
+    ? process.env.OPENAI_API_KEY
+    : process.env.APIKEY;
+
 // const usedTokensForAI = new Set();
 const openai = new OpenAI({
-  apiKey: process.env.APIKEY,
+  apiKey: apiKey,
 });
 
 // FUNCTION FOR AI REPLY
@@ -38,7 +43,7 @@ const chatCompletionsAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.APIKEY}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       data: {
         model: "gpt-3.5-turbo",
