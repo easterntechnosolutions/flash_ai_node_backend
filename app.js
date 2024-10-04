@@ -36,12 +36,25 @@ const PORT = process.env.PORT || 8080;
 
 const app = express();
 
+// Serve static files from the "web-app/src" directory
+app.use("/static", express.static(path.join(__dirname, "web-app/src")));
+
 // CORS CONFIG
 app.use(
   cors({
     origin: (origin, callback) => {
       const allowedOrigins = ["https://aiflash.dating", /\.aiflash\.dating$/];
-      if (!origin || allowedOrigins.some((pattern) => pattern.test(origin))) {
+      if (
+        !origin ||
+        allowedOrigins.some((pattern) => {
+          if (typeof pattern === "string") {
+            return pattern === origin;
+          } else if (pattern instanceof RegExp) {
+            return pattern.test(origin);
+          }
+          return false;
+        })
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
