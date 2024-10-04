@@ -36,9 +36,6 @@ const PORT = process.env.PORT || 8080;
 
 const app = express();
 
-// Serve static files from the "web-app/src" directory
-app.use("/static", express.static(path.join(__dirname, "web-app/src")));
-
 // CORS CONFIG
 app.use(
   cors({
@@ -74,14 +71,15 @@ const limiter = rateLimit({
 });
 
 // MIDDLEWARE
+app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(limiter);
 app.use(loggerMiddleware);
 
-// TEST ROUTES
+// DEFAULT ROUTES
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "web-app", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // ---------------- PUBLIC ROUTES -----------------------
