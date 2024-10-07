@@ -28,7 +28,7 @@ const conditionAPIKey =
 
 // const usedTokensForAI = new Set();
 const openai = new OpenAI({
-  apiKey: conditionAPIKey,
+  apiKey: process.env.APIKEY,
 });
 
 // FUNCTION FOR AI REPLY
@@ -43,7 +43,7 @@ const chatCompletionsAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${conditionAPIKey}`,
+        Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
         model: "gpt-3.5-turbo",

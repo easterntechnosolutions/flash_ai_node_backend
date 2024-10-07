@@ -28,10 +28,6 @@ const dateMateAI = async (req, res) => {
     const passThrough = new PassThrough();
     const { messages } = req.body;
 
-    // if (!messages || !Array.isArray(messages) || messages.length === 0) {
-    //   return errorResponse(res, "Invalid messages format", null, 403);
-    // }
-
     const defaultUserMessage = {
       role: "user",
       content:
@@ -51,7 +47,7 @@ const dateMateAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${conditionAPIKey}`,
+        Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -102,7 +98,7 @@ const virtualDateAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${conditionAPIKey}`,
+        Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -158,7 +154,7 @@ const localDateEventsFinderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${conditionAPIKey}`,
+        Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -216,7 +212,7 @@ const profileBuilderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${conditionAPIKey}`,
+        Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
         model: "gpt-4o-mini",
@@ -275,7 +271,7 @@ const bestMatchFinderAI = async (req, res) => {
       url: "https://api.openai.com/v1/chat/completions",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${conditionAPIKey}`,
+        Authorization: `Bearer ${process.env.APIKEY}`,
       },
       data: {
         model: "gpt-4o-mini",
