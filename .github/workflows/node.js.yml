@@ -36,8 +36,6 @@ jobs:
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.6
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -63,9 +61,6 @@ jobs:
 
             # Install PM2 globally if not already installed
             sudo npm install -g pm2
-
-            # Export OpenAI API Key as an environment variable for the application
-            export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
 
             # Start or restart the application using PM2
             pm2 start ecosystem.config.js --env production
