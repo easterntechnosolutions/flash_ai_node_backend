@@ -142,7 +142,12 @@ const getKey = async (kid) => {
 // FUNCTION TO GENERATE CLINET SECRET
 const generateAppleClientSecret = () => {
   try {
-    const privateKey = process.env.APPLE_PRIVATE_KEY;
+    const privateKey = `-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg8Ns+ikRhb3If6nW2
+c6Xp+J4IVhx13RpZRjDhd0d92J+gCgYIKoZIzj0DAQehRANCAAS/sbRehYOvEryw
+w9i61ZkzjSNASlfefEnYNx5jNK9ol2wBabD0pLVSyA4N8NBriXzCJkapvc1nQQFi
+I+kQ5Q7r
+-----END PRIVATE KEY-----`;
     const teamId = process.env.APPLE_TEAM_ID;
     const clientId = process.env.APPLE_CLIENT_ID;
     const keyId = process.env.APPLE_KEY_ID;
