@@ -33,83 +33,83 @@
     <meta name="theme-color" content="#F50A70" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="icon" type="image/webp" href="src/logo/logo.png" />
+    <link rel="icon" type="image/webp" href="./src/logo/logo.png" />
     <link
       rel="stylesheet"
       type="text/css"
       media="all"
-      href="src/styles/index.css"
+      href="./src/styles/index.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="all and (prefers-color-scheme: light)"
-      href="src/styles/media/light.css"
+      href="./src/styles/media/light.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="all and (prefers-color-scheme: dark)"
-      href="src/styles/media/dark.css"
+      href="./src/styles/media/dark.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (hover: hover)"
-      href="src/styles/media/hover.css"
+      href="./src/styles/media/hover.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 390px)"
-      href="src/styles/media/screen/xs.css"
+      href="./src/styles/media/screen/xs.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 640px)"
-      href="src/styles/media/screen/sm.css"
+      href="./src/styles/media/screen/sm.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 768px)"
-      href="src/styles/media/screen/md.css"
+      href="./src/styles/media/screen/md.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 1024px)"
-      href="src/styles/media/screen/lg.css"
+      href="./src/styles/media/screen/lg.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 1280px)"
-      href="src/styles/media/screen/xl.css"
+      href="./src/styles/media/screen/xl.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 1440px)"
-      href="src/styles/media/screen/2xl.css"
+      href="./src/styles/media/screen/2xl.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (min-width: 1600px)"
-      href="src/styles/media/screen/3xl.css"
+      href="./src/styles/media/screen/3xl.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
       media="screen and (prefers-reduced-motion: no-preference)"
-      href="src/styles/animations.css"
+      href="./src/styles/animations.css"
     />
     <noscript>
-      <link rel="stylesheet" type="text/css" href="src/styles/noscript.css" />
+      <link rel="stylesheet" type="text/css" href="./src/styles/noscript.css" />
     </noscript>
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
   </head>
 
   <body
@@ -121,9 +121,9 @@
       <nav class="w-full flex justify-between items-center">
         <div class="w-[154px]">
           <img
-            src="src/logo/icon.webp"
+            src="./src/logo/icon.webp"
             alt="Flash AI Logo"
-            style="height: 46.61px; width: 120px"
+            style="height: 50px; width: 120px"
           />
         </div>
         <!-- <menu class="hidden sm:flex items-center gap-8 mx-auto text-xl">
@@ -154,7 +154,7 @@
           style="padding-right: 10px"
         >
           <img
-            src="src/images/apple.png"
+            src="./src/images/apple.png"
             alt="Download AI Betting Tips on the Apple Store"
             style="width: 40vw; max-width: 220px; cursor: pointer"
           />
@@ -163,7 +163,7 @@
           href="https://play.google.com/store/apps/details?id=flash.aidating.assistant"
         >
           <img
-            src="src/images/google.png"
+            src="./src/images/google.png"
             alt="Get it AI Betting Tips on Google Play"
             style="width: 40vw; max-width: 220px; cursor: pointer"
           />
@@ -183,6 +183,7 @@
         >
           <div id="embla" class="w-screen overflow-hidden">
             <div class="flex flex-row noscript:flex-col noscript:gap-12">
+              <!-- Screen 1 -->
               <section
                 class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
@@ -193,8 +194,9 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="src/images/phone/p0.webp"
-                      alt="Flash AI Screenshot"
+                      srcset="./src/images/phone/p0.webp"
+                      alt="Flash AI Screenshot 1"
+                      loading="lazy"
                     />
                   </picture>
                 </div>
@@ -220,7 +222,7 @@
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
                     <img
-                      src="src/images/apple.png"
+                      src="./src/images/apple.png"
                       alt="Download AI Betting Tips on the Apple Store"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
@@ -229,13 +231,15 @@
                     href="https://play.google.com/store/apps/details?id=flash.aidating.assistant"
                   >
                     <img
-                      src="src/images/google.png"
+                      src="./src/images/google.png"
                       alt="Get it AI Betting Tips on Google Play"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
                   </a>
                 </div>
               </section>
+
+              <!-- Screen 2 -->
               <section
                 class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
@@ -246,8 +250,9 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="src/images/phone/p1.webp"
-                      alt="Flash AI Screenshot"
+                      srcset="./src/images/phone/p1.webp"
+                      alt="Flash AI Screenshot 2"
+                      loading="lazy"
                     />
                   </picture>
                 </div>
@@ -273,7 +278,7 @@
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
                     <img
-                      src="src/images/apple.png"
+                      src="./src/images/apple.png"
                       alt="Download AI Betting Tips on the Apple Store"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
@@ -282,13 +287,15 @@
                     href="https://play.google.com/store/apps/details?id=flash.aidating.assistant"
                   >
                     <img
-                      src="src/images/google.png"
+                      src="./src/images/google.png"
                       alt="Get it AI Betting Tips on Google Play"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
                   </a>
                 </div>
               </section>
+
+              <!-- Screen 3 -->
               <section
                 class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
@@ -299,8 +306,9 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="src/images/phone/p2.webp"
-                      alt="Flash AI screenshot"
+                      srcset="./src/images/phone/p2.webp"
+                      alt="Flash AI Screenshot 3"
+                      loading="lazy"
                     />
                   </picture>
                 </div>
@@ -326,7 +334,7 @@
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
                     <img
-                      src="src/images/apple.png"
+                      src="./src/images/apple.png"
                       alt="Download AI Betting Tips on the Apple Store"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
@@ -335,13 +343,15 @@
                     href="https://play.google.com/store/apps/details?id=flash.aidating.assistant"
                   >
                     <img
-                      src="src/images/google.png"
+                      src="./src/images/google.png"
                       alt="Get it AI Betting Tips on Google Play"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
                   </a>
                 </div>
               </section>
+
+              <!-- Screen 4 -->
               <section
                 class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
@@ -352,8 +362,9 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="src/images/phone/p3.webp"
-                      alt="Flash AI screenshot"
+                      srcset="./src/images/phone/p3.webp"
+                      alt="Flash AI Screenshot 4"
+                      loading="lazy"
                     />
                   </picture>
                 </div>
@@ -379,7 +390,7 @@
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
                     <img
-                      src="src/images/apple.png"
+                      src="./src/images/apple.png"
                       alt="Download AI Betting Tips on the Apple Store"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
@@ -388,7 +399,7 @@
                     href="https://play.google.com/store/apps/details?id=flash.aidating.assistant"
                   >
                     <img
-                      src="src/images/google.png"
+                      src="./src/images/google.png"
                       alt="Get it AI Betting Tips on Google Play"
                       style="width: 40vw; max-width: 220px; cursor: pointer"
                     />
@@ -398,6 +409,7 @@
             </div>
           </div>
 
+          <!-- Nav Bar -->
           <div
             id="embla-nav"
             class="noscript:hidden flex xl:flex-col justify-center items-center gap-5 px-5 text-white"
@@ -442,10 +454,20 @@
           </li>
         </menu>
       </nav>
-      <p class="flex items-center text-white cursor-default">©2024 Flash AI</p>
+      <p class="flex items-center text-white cursor-default">
+        ©<span id="year"></span> &nbsp;Flash AI
+      </p>
     </footer>
 
-    <script type="module" src="src/js/main.min.js"></script>
-    <script type="module" src="src/js/button.js"></script>
+    <script type="module" src="./src/js/main.min.js"></script>
+    <script type="module" src="./src/js/button.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const yearElement = document.getElementById("year");
+        const currentYear = new Date().getFullYear();
+        yearElement.textContent = currentYear;
+      });
+    </script>
   </body>
 </html>
