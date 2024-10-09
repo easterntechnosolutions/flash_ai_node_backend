@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>FLASH - AI Dating Messaging Assistant</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- CUSTOM -->
-    <title>FLASH - AI Dating Messaging Assistant</title>
     <meta name="description" content="FLASH - AI Dating Messaging Assistant" />
     <meta property="og:title" content="FLASH - AI Dating Messaging Assistant" />
     <meta
@@ -28,7 +26,6 @@
     <link rel="canonical" href="https://aiflash.dating/" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Flash" />
-    <!-- CUSTOM -->
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#F50A70" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -109,7 +106,68 @@
     <noscript>
       <link rel="stylesheet" type="text/css" href="./src/styles/noscript.css" />
     </noscript>
+
     <link rel="manifest" href="./manifest.json" />
+
+    <!-- CARASOUL CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/embla-carousel@6.0.0/embla.min.css"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/embla-carousel@6.0.0/embla.min.js"
+    ></script>
+    <script src="https://unpkg.com/embla-carousel/embla-carousel.umd.js"></script>
+
+    <style>
+      .embla {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .embla__container {
+        display: flex;
+        flex-direction: row;
+        transition: transform 0.8s ease-out;
+      }
+
+      .embla__slide {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        scroll-snap-align: start;
+      }
+
+      .embla__slide img {
+        width: 90%;
+        max-height: 70%;
+        object-fit: contain;
+      }
+
+      #embla-nav__scroll-line {
+        width: 5px;
+        height: 150px;
+        background-color: #4a5568;
+        border-radius: 10px;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        cursor: pointer;
+      }
+
+      #embla-nav__progress-bar {
+        width: 100%;
+        height: 0%;
+        background-color: #f3256a;
+        border-radius: 10px;
+        transition: height 0.3s ease;
+      }
+    </style>
   </head>
 
   <body
@@ -126,24 +184,6 @@
             style="height: 50px; width: 120px"
           />
         </div>
-        <!-- <menu class="hidden sm:flex items-center gap-8 mx-auto text-xl">
-				<li>
-					<a href="#use-cases">Use cases</a>
-				</li>
-				<li>
-					<a href="#features">Features</a>
-				</li>
-				<li>
-					<a href="#start-guide">How to start</a>
-				</li>
-			</menu> -->
-        <!-- <a class="
-						h-full py-3 px-8 lg:py-4 lg:px-10 font-medium text-lg text-blue-600 whitespace-nowrap bg-gray-150 rounded-full light:hover:bg-lightblue-50
-						dark:text-white dark:bg-transparent dark:border dark:border-white dark:border-opacity-60 hover:border-opacity-100
-						transition-colors duration-200
-					" href="https://flashai.onelink.me/sZbT/web" target="_blank">
-				Get started
-			</a> -->
       </nav>
       <div
         class="header-button"
@@ -170,6 +210,7 @@
         </a>
       </div>
     </header>
+
     <main
       class="w-full flex flex-col items-center bg-gray-700 dark:bg-gray-900"
     >
@@ -182,10 +223,10 @@
           class="max-w-[1200px] flex flex-col xl:flex-row items-center gap-y-6 py-8"
         >
           <div id="embla" class="w-screen overflow-hidden">
-            <div class="flex flex-row noscript:flex-col noscript:gap-12">
-              <!-- Screen 1 -->
-              <section
-                class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
+            <div class="embla__container">
+              <!-- Image 1 -->
+              <div
+                class="embla__slide w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
                 <div
                   class="w-[336px] h-[336px] sm:w-[488px] sm:h-[488px] flex flex-col justify-center items-center gap-1 p-7 text-sm text-black bg-gradient direction-[340deg] from-red-200 to-lavender-100 rounded-3xl cursor-default"
@@ -194,7 +235,7 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="./src/images/phone/p0.webp"
+                      src="./src/images/phone/p0.webp"
                       alt="Flash AI Screenshot 1"
                       loading="lazy"
                     />
@@ -212,12 +253,6 @@
                     feedback and expert tips to enhance your online profile and
                     communication.
                   </p>
-                  <!-- <a class="
-								max-w-max mt-auto py-3 px-8 lg:py-4 lg:px-10 font-medium text-lg text-white whitespace-nowrap 
-								bg-aqua-500 hover:bg-blue-600 rounded-full transition-colors duration-200 noscript:hidden
-							" href="https://flashai.onelink.me/sZbT/web" target="_blank">
-									Get started
-								</a> -->
                   <a
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
@@ -237,11 +272,11 @@
                     />
                   </a>
                 </div>
-              </section>
+              </div>
 
-              <!-- Screen 2 -->
-              <section
-                class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
+              <!-- Image 2 -->
+              <div
+                class="embla__slide w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
                 <div
                   class="w-[336px] h-[336px] sm:w-[488px] sm:h-[488px] flex flex-col justify-center items-center gap-1 p-7 text-sm text-black bg-gradient direction-[340deg] from-red-200 to-lavender-100 rounded-3xl cursor-default"
@@ -250,7 +285,7 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="./src/images/phone/p1.webp"
+                      src="./src/images/phone/p1.webp"
                       alt="Flash AI Screenshot 2"
                       loading="lazy"
                     />
@@ -268,12 +303,6 @@
                     match's profile or a chat snippet to generate tailored
                     conversation starters.
                   </p>
-                  <!-- <a class="
-								max-w-max mt-auto py-3 px-8 lg:py-4 lg:px-10 font-medium text-lg text-white whitespace-nowrap 
-								bg-aqua-500 hover:bg-blue-600 rounded-full transition-colors duration-200 noscript:hidden
-							" href="https://flashai.onelink.me/sZbT/web" target="_blank">
-									Get started
-								</a> -->
                   <a
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
@@ -293,11 +322,11 @@
                     />
                   </a>
                 </div>
-              </section>
+              </div>
 
-              <!-- Screen 3 -->
-              <section
-                class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
+              <!-- Image 3 -->
+              <div
+                class="embla__slide w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
                 <div
                   class="w-[336px] h-[336px] sm:w-[488px] sm:h-[488px] flex flex-col justify-center items-center gap-1 p-7 text-sm text-black bg-gradient direction-[207deg] from-orange-200 to-yellow-200 rounded-3xl cursor-default"
@@ -306,7 +335,7 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="./src/images/phone/p2.webp"
+                      src="./src/images/phone/p2.webp"
                       alt="Flash AI Screenshot 3"
                       loading="lazy"
                     />
@@ -324,12 +353,6 @@
                     smooth-talker, crafting clever replies that perfectly suit
                     your style.
                   </p>
-                  <!-- <a class="
-								max-w-max mt-auto py-3 px-8 lg:py-4 lg:px-10 font-medium text-lg text-white whitespace-nowrap 
-								bg-aqua-500 hover:bg-blue-600 rounded-full transition-colors duration-200 noscript:hidden
-							" href="https://flashai.onelink.me/sZbT/web" target="_blank">
-									Get started
-								</a> -->
                   <a
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
@@ -349,11 +372,11 @@
                     />
                   </a>
                 </div>
-              </section>
+              </div>
 
-              <!-- Screen 4 -->
-              <section
-                class="w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
+              <!-- Image 4 -->
+              <div
+                class="embla__slide w-full flex flex-0 flex-col xl:flex-row xl:gap-30 items-center gap-6 px-5 text-white"
               >
                 <div
                   class="relative w-[336px] h-[336px] sm:w-[488px] sm:h-[488px] flex flex-col justify-center items-center gap-2 p-7 text-sm text-black bg-gradient from-lightblue-200 to-aqua-100 rounded-3xl cursor-default"
@@ -362,7 +385,7 @@
                     <img
                       class="w-inherit h-inherit mx-auto"
                       style="max-height: 320px"
-                      srcset="./src/images/phone/p3.webp"
+                      src="./src/images/phone/p3.webp"
                       alt="Flash AI Screenshot 4"
                       loading="lazy"
                     />
@@ -380,12 +403,6 @@
                     and humor, ensuring your conversations feel authentically
                     you.
                   </p>
-                  <!-- <a class="
-								max-w-max mt-auto py-3 px-8 lg:py-4 lg:px-10 font-medium text-lg text-white whitespace-nowrap 
-								bg-aqua-500 hover:bg-blue-600 rounded-full transition-colors duration-200 noscript:hidden
-							" href="https://flashai.onelink.me/sZbT/web" target="_blank">
-									Get started
-								</a> -->
                   <a
                     href="https://apps.apple.com/us/app/flash-ai-dating-assistant/id6478612993"
                   >
@@ -405,28 +422,15 @@
                     />
                   </a>
                 </div>
-              </section>
+              </div>
             </div>
           </div>
 
-          <!-- Nav Bar -->
-          <div
-            id="embla-nav"
-            class="noscript:hidden flex xl:flex-col justify-center items-center gap-5 px-5 text-white"
-          >
-            <span id="embla-nav__current">01</span>
-            <div
-              id="embla-nav__dots"
-              class="flex xl:flex-col items-center gap-4"
-            >
-              <button
-                type="button"
-                class="embla-nav__dot w-[50px] xs:w-[62px] h-1 xl:w-1 xl:h-[82px] bg-gray-500 data-[active=true]:bg-aqua-500 rounded-full"
-                data-active="false"
-                aria-label="dot"
-              ></button>
+          <!-- Vertical Navigation (Slider) -->
+          <div id="embla-nav">
+            <div id="embla-nav__scroll-line">
+              <div id="embla-nav__progress-bar"></div>
             </div>
-            <span id="embla-nav__length">04</span>
           </div>
         </div>
       </article>
@@ -459,14 +463,74 @@
       </p>
     </footer>
 
-    <script type="module" src="./src/js/main.min.js"></script>
-    <script type="module" src="./src/js/button.js"></script>
-
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const yearElement = document.getElementById("year");
         const currentYear = new Date().getFullYear();
         yearElement.textContent = currentYear;
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Initialize the Embla Carousel
+        const emblaNode = document.querySelector("#embla");
+        const embla = EmblaCarousel(emblaNode, {
+          direction: "y", // Vertical scroll
+          loop: false,
+        });
+
+        const progressBar = document.querySelector("#embla-nav__progress-bar");
+        const scrollLine = document.querySelector("#embla-nav__scroll-line");
+        const totalSlides = document.querySelectorAll(".embla__slide").length;
+
+        let isDragging = false;
+
+        // Update the progress bar height based on the current slide
+        function updateProgressBar() {
+          const selectedIndex = embla.selectedScrollSnap();
+          const progressPercentage = ((selectedIndex + 1) / totalSlides) * 100;
+          progressBar.style.height = `${progressPercentage}%`;
+        }
+
+        // Handle manual scrolling with the progress bar
+        function setCarouselByScroll(percent) {
+          const slideIndex = Math.round((percent / 100) * (totalSlides - 1));
+          embla.scrollTo(slideIndex);
+        }
+
+        // Function to calculate percentage based on the scrollbar's position
+        function getScrollPercentage(y) {
+          const rect = scrollLine.getBoundingClientRect();
+          const scrollHeight = rect.height;
+          let percent = ((y - rect.top) / scrollHeight) * 100;
+          percent = Math.min(100, Math.max(0, percent)); // Clamp between 0 and 100
+          return percent;
+        }
+
+        // Mouse down event to start dragging
+        scrollLine.addEventListener("mousedown", (e) => {
+          isDragging = true;
+          const percent = getScrollPercentage(e.clientY);
+          progressBar.style.height = `${percent}%`;
+          setCarouselByScroll(percent);
+        });
+
+        // Mouse move event to update the progress bar while dragging
+        document.addEventListener("mousemove", (e) => {
+          if (!isDragging) return;
+          const percent = getScrollPercentage(e.clientY);
+          progressBar.style.height = `${percent}%`;
+          setCarouselByScroll(percent);
+        });
+
+        // Mouse up event to stop dragging
+        document.addEventListener("mouseup", () => {
+          isDragging = false;
+        });
+
+        embla.on("select", updateProgressBar);
+        updateProgressBar(); // Initialize progress bar
       });
     </script>
   </body>

@@ -10,20 +10,21 @@ import FlowAnimation from "../js/animations/FlowAnimation";
 const emblaNode = document.querySelector("#embla");
 const dotsNode = document.querySelector("#embla-nav__dots");
 const currentSlideCounterNode = document.querySelector("#embla-nav__current");
+const emblaButton = document.querySelector("#embla-nav__button");
 
 const options = { axis: "x", loop: true };
-
 const emblaApi = EmblaCarousel(emblaNode, options, [Autoplay({ delay: 3000 })]);
 
 const removeDotBtnsAndClickHandlers = addDotBtnsAndClickHandlers(
   emblaApi,
   dotsNode,
-  currentSlideCounterNode
+  currentSlideCounterNode,
+  emblaButton
 );
 
 emblaApi.on("destroy", removeDotBtnsAndClickHandlers);
 
-async function selectStatisticsTimeframe(_, eventTrigger) {
+export async function selectStatisticsTimeframe(_, eventTrigger) {
   const currentButton = document.querySelector(
     '.statistics-timeframe[data-active="true"]'
   );
