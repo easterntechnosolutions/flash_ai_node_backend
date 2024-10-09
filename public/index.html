@@ -148,6 +148,10 @@
         object-fit: contain;
       }
 
+      #embla-nav {
+        margin-left: 10px;
+      }
+
       #embla-nav__scroll-line {
         width: 5px;
         height: 150px;
@@ -158,6 +162,7 @@
         align-items: flex-start;
         justify-content: flex-start;
         cursor: pointer;
+        margin-top: 20px;
       }
 
       #embla-nav__progress-bar {
@@ -476,7 +481,7 @@
         // Initialize the Embla Carousel
         const emblaNode = document.querySelector("#embla");
         const embla = EmblaCarousel(emblaNode, {
-          direction: "y", // Vertical scroll
+          direction: "y",
           loop: false,
         });
 
