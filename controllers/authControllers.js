@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const jwksClient = require("jwks-rsa");
+const { v4: uuidv4 } = require("uuid");
 
 // USER MODEL
 const { User } = require("../models");
@@ -33,11 +34,78 @@ const googleLoginUser = async (req, res) => {
 
     const { name, email, id } = req.body;
 
+    // Check if only email is provided
+    if (!email) {
+      logger.warn("authControllers --> googleLoginUser --> email is required");
+      return errorResponse(res, message.AUTH.EMAIL_REQUIRED, null, 400);
+    }
+
     // Find the user by email and check if is_google is set to "1"
     let userByEmail = await User.findOne({
       where: { email, is_google: "1" },
     });
 
+    // If ID is not provided, handle email-based login/registration
+    if (!id) {
+      if (userByEmail) {
+        // User exists with the provided email
+        const accessToken = generateAccessToken(
+          userByEmail.user_id,
+          userByEmail.email
+        );
+        const refreshToken = generateRefreshToken(
+          userByEmail.user_id,
+          userByEmail.email
+        );
+
+        const userData = {
+          accessToken,
+          refreshToken,
+          name: userByEmail.name,
+          email: userByEmail.email,
+        };
+
+        logger.info(
+          "authControllers --> googleLoginUser --> user logged in with email only"
+        );
+        return successResponse(res, message.AUTH.VERIFIED_USER, userData, 200);
+      } else {
+        // No user found with this email, create a new user with email only
+        let generatedUserName = email.split("@")[0];
+        const newUser = await User.create({
+          name: name || generatedUserName,
+          email,
+          user_id: uuidv4(),
+          is_google: "1",
+        });
+
+        // Generate tokens
+        const accessToken = generateAccessToken(newUser.user_id, newUser.email);
+        const refreshToken = generateRefreshToken(
+          newUser.user_id,
+          newUser.email
+        );
+
+        const userData = {
+          accessToken,
+          refreshToken,
+          name: newUser.name,
+          email: newUser.email,
+        };
+
+        logger.info(
+          "authControllers --> googleLoginUser --> new user created with email only"
+        );
+        return successResponse(
+          res,
+          message.AUTH.NEW_USER_CREATED,
+          userData,
+          201
+        );
+      }
+    }
+
+    // If ID is provided, continue with the original logic
     // Find the user by id and check if is_google is set to "1"
     let userById = await User.findOne({
       where: { user_id: id, is_google: "1" },
