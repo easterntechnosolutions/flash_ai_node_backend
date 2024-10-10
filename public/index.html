@@ -161,14 +161,13 @@
         background-color: #4a5568;
         border-radius: 10px;
         position: relative;
-
         cursor: pointer;
         margin-top: 20px;
       }
 
       #embla-nav__progress-bar {
         height: 100%;
-        width: 100%;
+        width: 0%;
         background-color: #f3256a;
         border-radius: 10px;
         transition: width 0.3s ease;
@@ -462,7 +461,7 @@
         </menu>
       </nav>
       <p class="flex items-center text-white cursor-default">
-        ©<span id="year"></span> &nbsp;Flash AI
+        ©<span id="year"></span> &nbsp;- Flash AI
       </p>
     </footer>
 
@@ -476,7 +475,6 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // Initialize the Embla Carousel
         const emblaNode = document.querySelector("#embla");
         const embla = EmblaCarousel(emblaNode, {
           direction: "x",
@@ -488,12 +486,25 @@
         const totalSlides = document.querySelectorAll(".embla__slide").length;
 
         let isDragging = false;
+        let autoScrollInterval;
 
-        // Update the progress bar height based on the current slide
+        // Update the progress bar width based on the current slide
         function updateProgressBar() {
           const selectedIndex = embla.selectedScrollSnap();
           const progressPercentage = ((selectedIndex + 1) / totalSlides) * 100;
-          progressBar.style.height = `${progressPercentage}%`;
+          progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        // Automatically slide images every 3 seconds
+        function startAutoSlide() {
+          autoScrollInterval = setInterval(() => {
+            embla.scrollNext();
+          }, 3000);
+        }
+
+        // Stop automatic sliding
+        function stopAutoSlide() {
+          clearInterval(autoScrollInterval);
         }
 
         // Handle manual scrolling with the progress bar
@@ -502,38 +513,43 @@
           embla.scrollTo(slideIndex);
         }
 
-        // Function to calculate percentage based on the scrollbar's position
-        function getScrollPercentage(y) {
+        // Calculate percentage based on the scrollbar's position
+        function getScrollPercentage(x) {
           const rect = scrollLine.getBoundingClientRect();
-          const scrollHeight = rect.height;
-          let percent = ((y - rect.top) / scrollHeight) * 100;
-          percent = Math.min(100, Math.max(0, percent)); // Clamp between 0 and 100
+          const scrollWidth = rect.width;
+          let percent = ((x - rect.left) / scrollWidth) * 100;
+          percent = Math.min(100, Math.max(0, percent));
           return percent;
         }
 
         // Mouse down event to start dragging
         scrollLine.addEventListener("mousedown", (e) => {
+          stopAutoSlide();
           isDragging = true;
-          const percent = getScrollPercentage(e.clientY);
-          progressBar.style.height = `${percent}%`;
+          const percent = getScrollPercentage(e.clientX);
+          progressBar.style.width = `${percent}%`;
           setCarouselByScroll(percent);
         });
 
         // Mouse move event to update the progress bar while dragging
         document.addEventListener("mousemove", (e) => {
           if (!isDragging) return;
-          const percent = getScrollPercentage(e.clientY);
-          progressBar.style.height = `${percent}%`;
+          const percent = getScrollPercentage(e.clientX);
+          progressBar.style.width = `${percent}%`;
           setCarouselByScroll(percent);
         });
 
         // Mouse up event to stop dragging
         document.addEventListener("mouseup", () => {
+          if (isDragging) {
+            startAutoSlide();
+          }
           isDragging = false;
         });
 
         embla.on("select", updateProgressBar);
-        updateProgressBar(); // Initialize progress bar
+        updateProgressBar();
+        startAutoSlide();
       });
     </script>
   </body>
